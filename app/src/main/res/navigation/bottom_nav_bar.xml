@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    app:startDestination="@id/contactListFragment">
+    <fragment
+        android:id="@+id/contactListFragment"
+        android:name="com.example.tmdcontactsapp.view.ContactsListFragment"
+        android:label="fragment_contacts_list"
+        tools:layout="@layout/fragment_contacts_list" />
+    <fragment
+        android:id="@+id/groupsFragment"
+        android:name="com.example.tmdcontactsapp.view.GroupsFragment"
+        android:label="fragment_groups"
+        tools:layout="@layout/fragment_groups" />
+    <fragment
+        android:id="@+id/addPersonFragment"
+        android:name="com.example.tmdcontactsapp.view.AddPersonFragment"
+        android:label="fragment_add_person"
+        tools:layout="@layout/fragment_add_person" />
+    <fragment
+        android:id="@+id/profileFragment"
+        android:name="com.example.tmdcontactsapp.view.ProfileFragment"
+        android:label="fragment_profile"
+        tools:layout="@layout/fragment_profile" >
+        <argument
+            android:name="myProfileData"
+            app:argType="string"
+            android:defaultValue="TEST" />
+    </fragment>
+</navigation>

@@ -1,0 +1,292 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<androidx.appcompat.widget.LinearLayoutCompat xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    tools:context=".view.Update_Profile"
+    android:background="@color/white">
+
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
+
+            <ImageView
+                android:id="@+id/photoUpdateProfile"
+                android:layout_width="100dp"
+                android:layout_height="100dp"
+                android:layout_gravity="center"
+                android:layout_marginStart="8dp"
+                android:layout_marginLeft="8dp"
+                android:layout_marginTop="8dp"
+                android:layout_marginEnd="8dp"
+                android:layout_marginRight="8dp"
+                android:layout_marginBottom="8dp"
+                android:src="@drawable/photo"
+                android:onClick="choosePhotoUpdateProfile"/>
+
+            <EditText
+                android:id="@+id/updateProfileNameText"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="32dp"
+                android:layout_marginTop="8dp"
+                android:layout_marginEnd="32dp"
+                android:background="@drawable/round_border"
+                android:drawableStart="@drawable/name"
+                android:drawablePadding="16dp"
+                android:ems="10"
+                android:enabled="false"
+                android:hint="@string/nameHint"
+                android:textColorHint="@color/colorPrimary"
+                android:textColor="@color/colorPrimary"
+                android:inputType="text"
+                android:padding="8dp" />
+
+            <EditText
+                android:id="@+id/updateProfileSurnameText"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="32dp"
+                android:layout_marginTop="8dp"
+                android:layout_marginEnd="32dp"
+                android:background="@drawable/round_border"
+                android:drawableStart="@drawable/name"
+                android:drawablePadding="16dp"
+                android:ems="10"
+                android:hint="Surname"
+                android:textColorHint="@color/colorPrimary"
+                android:textColor="@color/colorPrimary"
+                android:inputType="text"
+                android:padding="8dp" />
+
+            <EditText
+                android:id="@+id/updateProfileEmailText"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="32dp"
+                android:layout_marginTop="8dp"
+                android:layout_marginEnd="32dp"
+                android:background="@drawable/round_border"
+                android:drawableStart="@drawable/email"
+                android:drawablePadding="16dp"
+                android:ems="10"
+                android:hint="Email"
+                android:textColorHint="@color/colorPrimary"
+                android:textColor="@color/colorPrimary"
+                android:inputType="text"
+                android:padding="8dp" />
+
+
+            <EditText
+                android:id="@+id/updateProfileAddressText"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="32dp"
+                android:layout_marginTop="8dp"
+                android:layout_marginEnd="32dp"
+                android:background="@drawable/round_border"
+                android:drawableStart="@drawable/address"
+                android:drawablePadding="16dp"
+                android:ems="10"
+                android:hint="Address"
+                android:textColorHint="@color/colorPrimary"
+                android:textColor="@color/colorPrimary"
+                android:inputType="textLongMessage|textMultiLine|text"
+                android:padding="8dp"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintHorizontal_bias="1.0"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/passwordTextRegister" />
+
+
+            <EditText
+                android:id="@+id/updateProfileBirthdayText"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="32dp"
+                android:layout_marginTop="8dp"
+                android:layout_marginEnd="32dp"
+                android:background="@drawable/round_border"
+                android:drawableStart="@drawable/birthday"
+                android:drawablePadding="16dp"
+                android:ems="10"
+                android:hint="Birthday"
+                android:textColorHint="@color/colorPrimary"
+                android:textColor="@color/colorPrimary"
+                android:inputType="text"
+                android:padding="8dp"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintHorizontal_bias="1.0"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/addPersonAddressText" />
+
+            <EditText
+                android:id="@+id/updateProfileCellphoneText"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="32dp"
+                android:layout_marginTop="8dp"
+                android:layout_marginEnd="32dp"
+                android:background="@drawable/round_border"
+                android:drawableStart="@drawable/cellphone"
+                android:drawablePadding="16dp"
+                android:ems="10"
+                android:hint="Cell Phone Number"
+                android:textColorHint="@color/colorPrimary"
+                android:textColor="@color/colorPrimary"
+                android:inputType="phone"
+                android:padding="8dp"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintHorizontal_bias="0.0"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/photoRegister" />
+
+            <EditText
+                android:id="@+id/updateProfileWorkphoneText"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="32dp"
+                android:layout_marginTop="8dp"
+                android:layout_marginEnd="32dp"
+                android:background="@drawable/round_border"
+                android:drawableStart="@drawable/workphone"
+                android:drawablePadding="16dp"
+                android:ems="10"
+                android:hint="Work Phone Number"
+                android:textColorHint="@color/colorPrimary"
+                android:textColor="@color/colorPrimary"
+                android:inputType="phone"
+                android:padding="8dp"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintHorizontal_bias="0.0"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/addPersonCellphoneText" />
+
+            <EditText
+                android:id="@+id/updateProfileHomephoneText"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="32dp"
+                android:layout_marginTop="8dp"
+                android:layout_marginEnd="32dp"
+                android:background="@drawable/round_border"
+                android:drawableStart="@drawable/homephone"
+                android:drawablePadding="16dp"
+                android:ems="10"
+                android:hint="Home Phone Number"
+                android:textColorHint="@color/colorPrimary"
+                android:textColor="@color/colorPrimary"
+                android:inputType="phone"
+                android:padding="8dp"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintHorizontal_bias="0.0"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="parent" />
+
+            <EditText
+                android:id="@+id/updateProfileCompanyText"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="32dp"
+                android:layout_marginTop="8dp"
+                android:layout_marginEnd="32dp"
+                android:background="@drawable/round_border"
+                android:drawableStart="@drawable/company"
+                android:drawablePadding="16dp"
+                android:ems="10"
+                android:hint="Company"
+                android:textColorHint="@color/colorPrimary"
+                android:textColor="@color/colorPrimary"
+                android:inputType="text"
+                android:padding="8dp"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintHorizontal_bias="0.0"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/medViewRegister" />
+
+            <EditText
+                android:id="@+id/updateProfileTitleText"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="32dp"
+                android:layout_marginTop="8dp"
+                android:layout_marginEnd="32dp"
+                android:background="@drawable/round_border"
+                android:drawableStart="@drawable/title"
+                android:drawablePadding="16dp"
+                android:ems="10"
+                android:hint="Title"
+                android:textColorHint="@color/colorPrimary"
+                android:textColor="@color/colorPrimary"
+                android:inputType="text"
+                android:padding="8dp" />
+
+            <EditText
+                android:id="@+id/updateProfileNoteText"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="32dp"
+                android:layout_marginTop="8dp"
+                android:layout_marginEnd="32dp"
+                android:layout_marginBottom="16dp"
+                android:background="@drawable/round_border"
+                android:drawableStart="@drawable/note"
+                android:drawablePadding="16dp"
+                android:ems="10"
+                android:hint="Note"
+                android:textColorHint="@color/colorPrimary"
+                android:textColor="@color/colorPrimary"
+                android:inputType="text"
+                android:padding="8dp" />
+
+
+            <Button
+                android:id="@+id/updateProfileButton"
+                style="?attr/materialButtonOutlinedStyle"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:layout_marginBottom="8dp"
+                android:gravity="center"
+                android:text="UPDATE"
+                android:textSize="18sp"
+                android:textStyle="bold"
+                app:cornerRadius="25dp"
+                android:onClick="updateProfileButton"/>
+
+            <Button
+                android:id="@+id/toChangePassword"
+                style="?attr/materialButtonOutlinedStyle"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:layout_marginBottom="8dp"
+                android:gravity="center"
+                android:text="CHANGE PASSWORD"
+                android:textSize="18sp"
+                android:textStyle="bold"
+                app:cornerRadius="25dp"
+                android:onClick="changePasswordButton"/>
+
+        </LinearLayout>
+
+
+    </ScrollView>
+
+</androidx.appcompat.widget.LinearLayoutCompat>
+
+
+
+
+
+
+
+

@@ -1,0 +1,231 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.appcompat.widget.LinearLayoutCompat xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/white"
+    android:orientation="vertical"
+    tools:context=".view.activity_register"
+    tools:ignore="ExtraText"><![CDATA[
+    tools:context=".Profile">
+    ]]>
+
+    <androidx.appcompat.widget.Toolbar
+        android:id="@+id/toolbarDetailPerson"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@color/colorPrimary"
+        app:title="Details" />
+
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
+
+
+            <ImageView
+                android:id="@+id/detailPersonImageView"
+                android:layout_width="100dp"
+                android:layout_height="100dp"
+                android:layout_gravity="center"
+                android:layout_marginStart="8dp"
+                android:layout_marginLeft="8dp"
+                android:layout_marginTop="32dp"
+                android:layout_marginEnd="8dp"
+                android:layout_marginRight="8dp"
+                android:layout_marginBottom="8dp"
+                android:src="@drawable/photo" />
+
+            <TextView
+                android:id="@+id/detailPersonNameText"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="32dp"
+                android:drawableStart="@drawable/name"
+                android:padding="4dp"
+                android:text="Name:"
+                android:textColor="@color/colorPrimary"
+                android:textSize="18sp"
+                android:textStyle="normal"
+                tools:layout_editor_absoluteX="71dp"
+                tools:layout_editor_absoluteY="69dp" />
+
+            <TextView
+                android:id="@+id/detailPersonSurnameText"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="32dp"
+                android:layout_marginTop="8dp"
+                android:drawableStart="@drawable/name"
+                android:padding="4dp"
+                android:text="Surname:"
+                android:textColor="@color/colorPrimary"
+                android:textSize="18sp"
+                android:textStyle="normal"
+                tools:layout_editor_absoluteX="71dp"
+                tools:layout_editor_absoluteY="109dp" />
+
+            <TextView
+                android:id="@+id/detailPersonEmailText"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="32dp"
+                android:layout_marginTop="8dp"
+                android:drawableStart="@drawable/email"
+                android:padding="4dp"
+                android:text="Email:"
+                android:textColor="@color/colorPrimary"
+                android:textSize="18sp"
+                android:textStyle="normal"
+                tools:layout_editor_absoluteX="71dp"
+                tools:layout_editor_absoluteY="69dp" />
+
+            <TextView
+                android:id="@+id/detailPersonAddressText"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="32dp"
+                android:layout_marginTop="8dp"
+                android:drawableStart="@drawable/address"
+                android:inputType="textMultiLine"
+                android:padding="4dp"
+                android:text="Address:"
+                android:textColor="@color/colorPrimary"
+                android:textSize="18sp"
+                android:textStyle="normal"
+                tools:layout_editor_absoluteX="71dp"
+                tools:layout_editor_absoluteY="69dp" />
+
+            <TextView
+                android:id="@+id/detailPersonBirthdayText"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="32dp"
+                android:layout_marginTop="8dp"
+                android:drawableStart="@drawable/birthday"
+                android:padding="4dp"
+                android:text="Birthday:"
+                android:textColor="@color/colorPrimary"
+                android:textSize="18sp"
+                android:textStyle="normal"
+                tools:layout_editor_absoluteX="71dp"
+                tools:layout_editor_absoluteY="69dp" />
+
+            <TextView
+                android:id="@+id/detailPersonCellphoneText"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="32dp"
+                android:layout_marginTop="8dp"
+                android:drawableStart="@drawable/cellphone"
+                android:inputType="numberSigned|number"
+                android:padding="4dp"
+                android:text="Cell Phone:"
+                android:textColor="@color/colorPrimary"
+                android:textSize="18sp"
+                android:textStyle="normal"
+                tools:layout_editor_absoluteX="71dp"
+                tools:layout_editor_absoluteY="69dp" />
+
+            <TextView
+                android:id="@+id/detailPersonWorkphoneText"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="32dp"
+                android:layout_marginTop="8dp"
+                android:drawableStart="@drawable/workphone"
+                android:inputType="numberSigned|number"
+                android:padding="4dp"
+                android:text="Work Phone:"
+                android:textColor="@color/colorPrimary"
+                android:textSize="18sp"
+                android:textStyle="normal"
+                tools:layout_editor_absoluteX="71dp"
+                tools:layout_editor_absoluteY="69dp" />
+
+            <TextView
+                android:id="@+id/detailPersonHomephoneText"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="32dp"
+                android:layout_marginTop="8dp"
+                android:drawableStart="@drawable/homephone"
+                android:inputType="numberSigned|number"
+                android:padding="4dp"
+                android:text="Home Phone:"
+                android:textColor="@color/colorPrimary"
+                android:textSize="18sp"
+                android:textStyle="normal"
+                tools:layout_editor_absoluteX="71dp"
+                tools:layout_editor_absoluteY="69dp" />
+
+            <TextView
+                android:id="@+id/detailPersonCompanyText"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="32dp"
+                android:layout_marginTop="8dp"
+                android:drawableStart="@drawable/company"
+                android:padding="4dp"
+                android:text="Company:"
+                android:textColor="@color/colorPrimary"
+                android:textSize="18sp"
+                android:textStyle="normal"
+                tools:layout_editor_absoluteX="71dp"
+                tools:layout_editor_absoluteY="69dp" />
+
+            <TextView
+                android:id="@+id/detailPersonTitleText"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="32dp"
+                android:layout_marginTop="8dp"
+                android:drawableStart="@drawable/title"
+                android:padding="4dp"
+                android:text="Title:"
+                android:textColor="@color/colorPrimary"
+                android:textSize="18sp"
+                android:textStyle="normal"
+                tools:layout_editor_absoluteX="71dp"
+                tools:layout_editor_absoluteY="69dp" />
+
+            <TextView
+                android:id="@+id/detailPersonNoteText"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="32dp"
+                android:layout_marginTop="8dp"
+                android:drawableStart="@drawable/note"
+                android:inputType="textMultiLine"
+                android:padding="4dp"
+                android:text="Note:"
+                android:textColor="@color/colorPrimary"
+                android:textSize="18sp"
+                android:textStyle="normal"
+                tools:layout_editor_absoluteX="71dp"
+                tools:layout_editor_absoluteY="69dp" />
+
+            <View
+                android:id="@+id/detailPersonView"
+                android:layout_width="match_parent"
+                android:layout_height="100dp"
+                android:background="@drawable/wave_final"
+                android:layout_gravity="bottom"
+                android:rotation="180"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintHorizontal_bias="0.0"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
+        </LinearLayout>
+    </ScrollView>
+
+</androidx.appcompat.widget.LinearLayoutCompat>
+
+
+
+

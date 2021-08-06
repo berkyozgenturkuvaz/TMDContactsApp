@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="utf-8"?>
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    package="com.example.tmdcontactsapp">
+
+    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
+    <uses-permission android:name="android.permission.INTERNET" />
+
+    <application
+        android:allowBackup="true"
+        android:icon="@mipmap/ic_launcher"
+        android:label="@string/app_name"
+        android:roundIcon="@mipmap/ic_launcher_round"
+        android:supportsRtl="true"
+        android:theme="@style/Theme.TMDContactsApp">
+        <activity android:name=".view.AddGroupContact"></activity>
+        <activity android:name=".view.ChangePassword" />
+        <activity android:name=".view.ResetPassword" />
+        <activity android:name=".view.VerificationCode" />
+        <activity android:name=".view.UpdateGroup" />
+        <activity android:name=".view.GroupDetails" />
+        <activity android:name=".view.AddGroup" />
+        <activity android:name=".view.BottomNavigationViewActivity" />
+        <activity android:name=".view.Groups" />
+        <activity android:name=".view.Detail_Person" />
+        <activity android:name=".view.Update_Person" />
+        <activity android:name=".view.Forgot_Password" />
+        <activity android:name=".view.Update_Profile" />
+        <activity android:name=".view.Profile" />
+        <activity android:name=".view.Add_Person" />
+        <activity android:name=".view.MainActivity_Home" />
+        <activity android:name=".MainActivity_Register" />
+        <activity android:name=".view.activity_register" />
+        <activity
+            android:name=".view.MainActivity"
+            android:exported="true">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
+    </application>
+
+</manifest>

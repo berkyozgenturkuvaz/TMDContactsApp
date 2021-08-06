@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".view.AddGroupContact"
+    android:background="@color/white"
+    android:orientation="vertical">
+
+    <androidx.appcompat.widget.Toolbar
+        android:id="@+id/toolbarAddGroupContactList"
+        app:title="Contacts"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@color/colorPrimary"/>
+
+    <EditText
+        android:id="@+id/searchTextAddGroupContact"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_margin="16dp"
+        android:background="@drawable/round_border"
+        android:hint="Search"
+        android:textColorHint="@color/colorPrimary"
+        android:textColor="@color/colorPrimary"
+        android:textColorHighlight="@color/colorPrimaryDark"
+        android:textColorLink="@color/colorPrimaryDark"
+        android:padding="8dp"
+        android:textCursorDrawable="@drawable/ic_edit" />
+
+    <TextView
+        android:id="@+id/infoTextAddGroupContact"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:layout_marginStart="32dp"
+        android:layout_marginEnd="32dp"
+        android:drawableStart="@drawable/note"
+        android:gravity="center"
+        android:inputType="textMultiLine"
+        android:text="Please select contact to add selected group."
+        android:textColor="@color/colorPrimary"
+        android:textSize="18dp" />
+
+
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/addGroupContactRecyclerView"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="1dp"
+        android:layout_marginTop="72dp"
+        android:layout_marginEnd="1dp"
+        android:layout_marginBottom="-20dp">
+
+    </androidx.recyclerview.widget.RecyclerView>
+
+</LinearLayout>
