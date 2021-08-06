@@ -211,7 +211,9 @@ class activity_register : AppCompatActivity() {
                     Log.d("Pretty Printed JSON :", prettyJson)
                     Log.d("Image :", encoded)
                 } else {
+
                     Log.e("RETROFIT_ERROR", response.code().toString())
+
                 }
             }
         }

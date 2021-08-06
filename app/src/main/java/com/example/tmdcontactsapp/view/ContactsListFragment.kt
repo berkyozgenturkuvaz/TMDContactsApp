@@ -21,6 +21,7 @@ import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.tmdcontactsapp.R
+import com.example.tmdcontactsapp.`class`.Preferences.get
 import com.example.tmdcontactsapp.`class`.Preferences.savePrefs
 import com.example.tmdcontactsapp.`class`.Preferences.set
 import com.example.tmdcontactsapp.`class`.SwipeGesture
@@ -28,7 +29,6 @@ import com.example.tmdcontactsapp.adapter.RecyclerViewAdapter
 import com.example.tmdcontactsapp.model.ContactsModel
 import com.example.tmdcontactsapp.model.ProfileModel
 import com.example.tmdcontactsapp.service.ContacsAPI
-import com.google.gson.Gson
 import com.google.gson.GsonBuilder
 import com.google.gson.JsonParser
 import kotlinx.coroutines.CoroutineScope
@@ -71,11 +71,10 @@ class ContactsListFragment : Fragment() {
 
     companion object {
         @JvmStatic
-        fun newInstance(token: String, email: String) =
+        fun newInstance() =
             ContactsListFragment().apply {
                 arguments = Bundle().apply {
-                    putString(ARG_PARAM5, token)
-                    putString(ARG_PARAM6, email)
+
                 }
             }
     }
@@ -85,8 +84,7 @@ class ContactsListFragment : Fragment() {
         super.onCreate(savedInstanceState)
         setHasOptionsMenu(true)
         arguments?.let {
-            token = it.getString(ARG_PARAM5).toString()
-            userMail = it.getString(ARG_PARAM6).toString()
+
         }
 
     }
@@ -109,7 +107,12 @@ class ContactsListFragment : Fragment() {
         homeSurnameText = view.findViewById(R.id.homeSurnameText)
         contactImage = view.findViewById(R.id.contactImage)
 
+        token = context?.savePrefs()?.get("token", "value")
+        userMail = context?.savePrefs()?.get("userMail", "value")
+
         loadData()
+
+
 
         searchText = view.findViewById(R.id.searchText)
         searchText.addTextChangedListener(object : TextWatcher {
@@ -189,8 +192,10 @@ class ContactsListFragment : Fragment() {
                         surname = profileModels?.surname
                         photo = profileModels?.photo
 
-                        context!!.savePrefs()
-                            ?.set("userName", Gson().toJson(profileModels))
+                        /*context!!.savePrefs()
+                            ?.set("userName", Gson().toJson(profileModels))*/
+
+                        context?.savePrefs()?.set("userId", profileModels?.id)
 
                         loadDataContact()
                         onStart()
@@ -297,9 +302,7 @@ class ContactsListFragment : Fragment() {
                                     ).show()
 
 
-
                                     context?.savePrefs()?.set("contactsId", contactsModel.id)
-                                    context?.savePrefs()?.set("userId", userId)
 
                                     val intent = Intent(context, Detail_Person::class.java)
                                     startActivity(intent)

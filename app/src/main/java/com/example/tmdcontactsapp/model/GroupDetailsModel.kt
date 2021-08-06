@@ -4,7 +4,7 @@ data class GroupDetailsModel(
     var id : Int,
     var name: String,
     var surname: String,
-    var email: String,
+   /* var email: String,
     var address: String,
     var birthDate: String,
     var photo: String = "",
@@ -13,5 +13,5 @@ data class GroupDetailsModel(
     var telHome: String,
     var company: String,
     var title: String,
-    var note: String
+    var note: String*/
 )

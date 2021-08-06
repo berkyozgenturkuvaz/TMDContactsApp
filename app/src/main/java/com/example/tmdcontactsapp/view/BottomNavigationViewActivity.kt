@@ -1,6 +1,5 @@
 package com.example.tmdcontactsapp.view
 
-import android.content.SharedPreferences
 import android.os.Bundle
 import android.util.Log
 import androidx.appcompat.app.AppCompatActivity
@@ -32,10 +31,7 @@ class BottomNavigationViewActivity : AppCompatActivity() {
     lateinit var note: String
     val bundle = Bundle()
     lateinit var token: String
-    private var sharedString: String? = null
-    private lateinit var sharedPref: SharedPreferences
     private var userMail: String? = null
-    private val BASE_URL = "http://tmdcontacts-api.dev.tmd"
 
 
     private val navigationItemSelected =
@@ -43,18 +39,15 @@ class BottomNavigationViewActivity : AppCompatActivity() {
             when (item.itemId) {
                 R.id.contactListFragment -> {
 
-                    replaceFragment(
-                        ContactsListFragment.newInstance(
-                            token = token,
-                            email = userMail.toString()
-                        )
+                    replaceFragment(ContactsListFragment.newInstance()
                     )
                     return@OnNavigationItemSelectedListener true
                 }
-               /* R.id.groupsFragment -> {
-                    replaceFragment(GroupsFragment.newInstance(userId = id!!, token = token))
+                R.id.groupsFragment -> {
+                    replaceFragment(GroupsFragment()
+                    )
                     return@OnNavigationItemSelectedListener true
-                }*/
+                }
                /* R.id.addPersonFragment -> {
 
                     replaceFragment(
@@ -143,8 +136,7 @@ class BottomNavigationViewActivity : AppCompatActivity() {
         bottomNavigationView.setOnNavigationItemSelectedListener(navigationItemSelected)
         replaceFragment(
             ContactsListFragment.newInstance(
-                token = token,
-                email = userMail.toString()
+
             )
 
         )

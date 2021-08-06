@@ -18,6 +18,9 @@ import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.tmdcontactsapp.R
+import com.example.tmdcontactsapp.`class`.Preferences.get
+import com.example.tmdcontactsapp.`class`.Preferences.savePrefs
+import com.example.tmdcontactsapp.`class`.Preferences.set
 import com.example.tmdcontactsapp.`class`.SwipeGesture
 import com.example.tmdcontactsapp.adapter.RecyclerViewAdapterGroups
 import com.example.tmdcontactsapp.model.GroupsModel
@@ -52,11 +55,10 @@ class GroupsFragment : Fragment() {
 
     companion object {
         @JvmStatic
-        fun newInstance(userId: Int, token: String) =
+        fun newInstance() =
             GroupsFragment().apply {
                 arguments = Bundle().apply {
-                    putInt(ARG_PARAM1, userId)
-                    putString(ARG_PARAM2, token)
+
                 }
             }
     }
@@ -66,8 +68,7 @@ class GroupsFragment : Fragment() {
         super.onCreate(savedInstanceState)
         setHasOptionsMenu(true)
         arguments?.let {
-            userId = it.getInt(ARG_PARAM1)
-            token = it.getString(ARG_PARAM2)
+
         }
     }
 
@@ -85,16 +86,14 @@ class GroupsFragment : Fragment() {
         val groupsLayoutManager = LinearLayoutManager(context, LinearLayoutManager.VERTICAL, false)
         groupsRecyclerView.layoutManager = groupsLayoutManager
 
-        arguments?.let {
-            userId = it.getInt(ARG_PARAM1)
-            token = it.getString(ARG_PARAM2)
-
-        }
-
+        //Initiliaze variable
         addGroupButton = view.findViewById(R.id.addGroupButton)
         addGroupButton.setOnClickListener {
             addGroupButton()
         }
+
+        token = context?.savePrefs()?.get("token", "value")
+        userId = context?.savePrefs()?.get("userId", -1)
 
         loadData()
 
@@ -126,37 +125,33 @@ class GroupsFragment : Fragment() {
                 filteredList!!.add(item)
             }
         }
-
         groupsRecyclerViewAdapter!!.filterList(filteredList!!)
-
-
     }
 
     override fun onActivityCreated(savedInstanceState: Bundle?) {
         super.onActivityCreated(savedInstanceState)
-
     }
 
-//    override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
-//        inflater.inflate(R.menu.main_menu, menu)
-//        super.onCreateOptionsMenu(menu, inflater)
-//    }
-//
-//    override fun onOptionsItemSelected(item: MenuItem): Boolean {
-//        when (item.itemId) {
-//            R.id.deleteButton -> {
-//                Toast.makeText(requireActivity(), "Delete", Toast.LENGTH_LONG).show()
-//            }
-//            R.id.addButton -> {
-//                Toast.makeText(requireActivity(), "Add", Toast.LENGTH_LONG).show()
-//                val intent2 = Intent(context, AddGroup::class.java)
-//                intent2.putExtra("userId", userId)
-//                intent2.putExtra("token", token)
-//                startActivity(intent2)
-//            }
-//        }
-//        return super.onOptionsItemSelected(item)
-//    }
+/*    override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
+        inflater.inflate(R.menu.main_menu, menu)
+        super.onCreateOptionsMenu(menu, inflater)
+    }
+
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        when (item.itemId) {
+            R.id.deleteButton -> {
+                Toast.makeText(requireActivity(), "Delete", Toast.LENGTH_LONG).show()
+            }
+            R.id.addButton -> {
+                Toast.makeText(requireActivity(), "Add", Toast.LENGTH_LONG).show()
+                val intent2 = Intent(context, AddGroup::class.java)
+                intent2.putExtra("userId", userId)
+                intent2.putExtra("token", token)
+                startActivity(intent2)
+            }
+        }
+        return super.onOptionsItemSelected(item)
+    }*/
 
     val swipeGesture = object : SwipeGesture() {
         override fun onSwiped(viewHolder: RecyclerView.ViewHolder, direction: Int) {
@@ -247,11 +242,11 @@ class GroupsFragment : Fragment() {
                                         groupsModel.name,
                                         Toast.LENGTH_LONG
                                     ).show()
+
+                                    context?.savePrefs()?.set("groupId", groupsModel?.id)
+                                    context?.savePrefs()?.set("groupName", groupsModel?.name)
+
                                     val intent = Intent(context, GroupDetails::class.java)
-                                    intent.putExtra("groupId", groupsModel.id)
-                                    intent.putExtra("userId", userId)
-                                    intent.putExtra("groupName", groupsModel.name)
-                                    intent.putExtra("token", token)
                                     startActivity(intent)
                                 }
                             })
@@ -277,8 +272,6 @@ class GroupsFragment : Fragment() {
 
     fun addGroupButton() {
         val intent2 = Intent(context, AddGroup::class.java)
-        intent2.putExtra("userId", userId)
-        intent2.putExtra("token", token)
         startActivity(intent2)
     }
 

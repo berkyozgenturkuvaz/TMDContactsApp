@@ -16,7 +16,6 @@ import com.example.tmdcontactsapp.R
 import com.example.tmdcontactsapp.`class`.Preferences.get
 import com.example.tmdcontactsapp.`class`.Preferences.savePrefs
 import com.example.tmdcontactsapp.model.ProfileModel
-import com.example.tmdcontactsapp.model.UserImageModel
 import com.example.tmdcontactsapp.service.ContacsAPI
 import retrofit2.Call
 import retrofit2.Callback
@@ -45,9 +44,8 @@ class Detail_Person : AppCompatActivity() {
     private var token: String? = null
     lateinit var toolbar: Toolbar
     var id: Int? = 0
-    var idFromGroup: Int? = 0
     var userId: Int? = 0
-    lateinit var profilemodel : String
+   /* lateinit var profilemodel : String*/
 
 
     @SuppressLint("SetTextI18n")
@@ -57,22 +55,17 @@ class Detail_Person : AppCompatActivity() {
 
         init()
 
-        val intent = intent
-        idFromGroup = intent.getIntExtra("ContactId", 0)
-
         token = savePrefs().get("token","nullValue")
         id = savePrefs()["contactsId", -1]
         userId = savePrefs()["userId", -1]
 
-//        profilemodel = savePrefs()["userName", ""]
-//        val profilemodel : ProfileModel = Gson().fromJson(profilemodel , ProfileModel::class.java)
-//        Log.e("String Model: ", profilemodel.name.toString())
+     /*   profilemodel = savePrefs()["userName", ""]
+        val profilemodel : ProfileModel = Gson().fromJson(profilemodel , ProfileModel::class.java)
+        Log.e("String Model: ", profilemodel.name.toString())*/
 
         //loadData()
         //loadData2()
         loadDataContact()
-
-
 
     }
 
@@ -92,87 +85,6 @@ class Detail_Person : AppCompatActivity() {
 //        detailPersonGroupText = findViewById(R.id.detailPersonGroupText)
         toolbar = findViewById(R.id.toolbarDetailPerson)
         setSupportActionBar(toolbar)
-
-    }
-
-    //Get Contact Image using with userİd
-    private fun loadData() {
-
-        val retrofit = Retrofit.Builder()
-            .baseUrl(BASE_URL)
-            .addConverterFactory(GsonConverterFactory.create())
-            .build()
-
-        val service = retrofit.create(ContacsAPI::class.java)
-        if (idFromGroup != null) {
-            val call =
-                service.getContactImage("Bearer " + token.toString(), contactId = idFromGroup!!)
-            call?.enqueue(object : Callback<UserImageModel> {
-                override fun onResponse(
-                    call: Call<UserImageModel>,
-                    response: Response<UserImageModel>
-                ) {
-                    if (response.isSuccessful) {
-                        response.body()?.let {
-                            val userImageModel = response.body()
-                            photo = userImageModel?.photo
-
-                            val imageBytes = Base64.decode(photo, Base64.DEFAULT)
-                            val decodedImage =
-                                BitmapFactory.decodeByteArray(imageBytes, 0, imageBytes.size)
-                            detailPersonImageView.setImageBitmap(decodedImage)
-                        }
-
-                    } else {
-                        Log.e("RETROFIT_ERROR", response.code().toString())
-                    }
-                }
-
-                override fun onFailure(call: Call<UserImageModel>, t: Throwable) {
-                    t.printStackTrace()
-                }
-            })
-        }
-
-    }
-
-    //Get Contact Image using with userİd
-    private fun loadData2() {
-
-        val retrofit = Retrofit.Builder()
-            .baseUrl(BASE_URL)
-            .addConverterFactory(GsonConverterFactory.create())
-            .build()
-
-        val service = retrofit.create(ContacsAPI::class.java)
-        if (idFromGroup != null) {
-            val call = service.getContactImage("Bearer " + token.toString(), contactId = id!!)
-            call?.enqueue(object : Callback<UserImageModel> {
-                override fun onResponse(
-                    call: Call<UserImageModel>,
-                    response: Response<UserImageModel>
-                ) {
-                    if (response.isSuccessful) {
-                        response.body()?.let {
-                            val userImageModel = response.body()
-                            photo = userImageModel?.photo
-
-                            val imageBytes = Base64.decode(photo, Base64.DEFAULT)
-                            val decodedImage =
-                                BitmapFactory.decodeByteArray(imageBytes, 0, imageBytes.size)
-                            detailPersonImageView.setImageBitmap(decodedImage)
-                        }
-
-                    } else {
-                        Log.e("RETROFIT_ERROR", response.code().toString())
-                    }
-                }
-
-                override fun onFailure(call: Call<UserImageModel>, t: Throwable) {
-                    t.printStackTrace()
-                }
-            })
-        }
 
     }
 

@@ -7,6 +7,8 @@ import android.widget.Button
 import android.widget.EditText
 import androidx.appcompat.app.AppCompatActivity
 import com.example.tmdcontactsapp.R
+import com.example.tmdcontactsapp.`class`.Preferences.get
+import com.example.tmdcontactsapp.`class`.Preferences.savePrefs
 import com.example.tmdcontactsapp.model.AddGroupModel
 import com.example.tmdcontactsapp.service.ContacsAPI
 import com.google.gson.GsonBuilder
@@ -31,9 +33,8 @@ class AddGroup : AppCompatActivity() {
         addGroupNameText = findViewById(R.id.addGroupNameText)
         addGroupButton = findViewById(R.id.addGroupButton)
 
-        val intent2 = intent
-        userId = intent2.getIntExtra("userId", 0)
-        token = intent2.getStringExtra("token")
+        token = savePrefs()["token", "value"]
+        userId = savePrefs()["userId", -1]
     }
 
     //POST Function

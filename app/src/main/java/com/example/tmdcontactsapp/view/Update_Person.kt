@@ -384,34 +384,6 @@ class Update_Person : AppCompatActivity() {
     }
 
     fun updatePersonButton(view: View) {
-//        if (updatePersonNameText.text.isEmpty().apply {}) {
-//            Toast.makeText(
-//                applicationContext,
-//                "Name field can not be empty!",
-//                Toast.LENGTH_LONG
-//            ).show()
-//        } else if (updatePersonSurnameText.text.isEmpty().apply {}) {
-//            Toast.makeText(
-//                applicationContext,
-//                "Surname field can not be empty!",
-//                Toast.LENGTH_LONG
-//            ).show()
-//        } else if (updatePersonEmailText.text.isEmpty().apply {}) {
-//            Toast.makeText(
-//                applicationContext,
-//                "Email field can not be empty!",
-//                Toast.LENGTH_LONG
-//            ).show()
-//        } else if (updatePersonCellphoneText.text.isEmpty().apply {}) {
-//            Toast.makeText(
-//                applicationContext,
-//                "Cell phone number field can not be empty!",
-//                Toast.LENGTH_LONG
-//            ).show()
-//        } else {
-//            val intentHome = Intent(this, Detail_Person::class.java)
-//            startActivity(intentHome)
-//        }
         rawJSON()
     }
 

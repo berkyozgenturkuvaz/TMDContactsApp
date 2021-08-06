@@ -16,6 +16,9 @@ import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.tmdcontactsapp.R
+import com.example.tmdcontactsapp.`class`.Preferences.get
+import com.example.tmdcontactsapp.`class`.Preferences.savePrefs
+import com.example.tmdcontactsapp.`class`.Preferences.set
 import com.example.tmdcontactsapp.`class`.SwipeGesture
 import com.example.tmdcontactsapp.adapter.RecViewAdapterGroupDetails
 import com.example.tmdcontactsapp.model.DeleteGroupContactModel
@@ -42,11 +45,13 @@ class GroupDetails : AppCompatActivity() {
     var groupDetailsModel: ArrayList<GroupDetailsModel>? = null
     var groupDetailsRecyclerViewAdapter: RecViewAdapterGroupDetails? = null
     lateinit var searchTextGroupDetails: EditText
+
     private var groupId: Int? = 0
     private var userId: Int? = 0
     private var contactId: Int? = 0
     private var groupName: String? = null
     private var token: String? = null
+
     lateinit var updateGroupButton: Button
     lateinit var addContactGroupButton: Button
 
@@ -60,12 +65,11 @@ class GroupDetails : AppCompatActivity() {
             Toast.makeText(applicationContext, "Navigation Menu Clicked", Toast.LENGTH_LONG).show()
         }
 
-        //Intent
-        val intent = intent
-        groupId = intent.getIntExtra("groupId", 0)
-        userId = intent.getIntExtra("userId", 0)
-        groupName = intent.getStringExtra("groupName")
-        token = intent.getStringExtra("token")
+
+        token = savePrefs().get("token", "nullValue")
+        groupId = savePrefs()["groupId", -1]
+        userId = savePrefs()["userId", -1]
+        groupName = savePrefs()["groupName"]
 
 
         //Definition RecyclerView
@@ -104,9 +108,7 @@ class GroupDetails : AppCompatActivity() {
                 filteredList!!.add(item)
             }
         }
-
         groupDetailsRecyclerViewAdapter!!.filterList(filteredList!!)
-
     }
 
     override fun onCreateOptionsMenu(menu: Menu?): Boolean {
@@ -247,21 +249,10 @@ class GroupDetails : AppCompatActivity() {
                                         Toast.LENGTH_LONG
                                     ).show()
 
+                                    savePrefs()["contactsId"] = groupDetailsModel.id
+
                                     val intent =
                                         Intent(applicationContext, Detail_Person::class.java)
-                                    intent.putExtra("ContactId", groupDetailsModel.id)
-                                    intent.putExtra("Name", groupDetailsModel.name)
-                                    intent.putExtra("Surname", groupDetailsModel.surname)
-                                    intent.putExtra("Email", groupDetailsModel.email)
-                                    intent.putExtra("Address", groupDetailsModel.address)
-                                    intent.putExtra("BirthDate", groupDetailsModel.birthDate)
-                                    intent.putExtra("Tel", groupDetailsModel.tel)
-                                    intent.putExtra("TelBusiness ", groupDetailsModel.telBusiness)
-                                    intent.putExtra("TelHome", groupDetailsModel.telHome)
-                                    intent.putExtra("Company", groupDetailsModel.company)
-                                    intent.putExtra("Title", groupDetailsModel.title)
-                                    intent.putExtra("Note", groupDetailsModel.note)
-                                    intent.putExtra("token", token)
                                     startActivity(intent)
 
 
