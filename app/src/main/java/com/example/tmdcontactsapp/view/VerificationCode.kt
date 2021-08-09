@@ -2,13 +2,14 @@ package com.example.tmdcontactsapp.view
 
 import android.content.Intent
 import android.os.Bundle
-import android.util.Log
 import android.view.View
 import android.widget.Button
 import android.widget.EditText
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import com.example.tmdcontactsapp.R
+import com.example.tmdcontactsapp.`class`.Preferences.get
+import com.example.tmdcontactsapp.`class`.Preferences.savePrefs
 
 class VerificationCode : AppCompatActivity() {
 
@@ -26,12 +27,8 @@ class VerificationCode : AppCompatActivity() {
         verificationCodeText = findViewById(R.id.verificationCodeText)
         verificationButton = findViewById(R.id.verifyCodeButton)
 
-
-        val intent = intent
-        verificationCode = intent.getStringExtra("verificationCode")
-        emailForPass = intent.getStringExtra("emailForPass")
-        Log.d("Verification Code :", verificationCode.toString())
-
+        verificationCode = savePrefs()["verificationCode", ""]
+        emailForPass = savePrefs()["emailForPass", ""]
 
     }
 
@@ -39,7 +36,6 @@ class VerificationCode : AppCompatActivity() {
         verificationCodeUser = verificationCodeText.text.toString()
         if (verificationCodeUser.toString() == verificationCode.toString()) {
             val intentToResetPass = Intent(applicationContext, ResetPassword::class.java)
-            intentToResetPass.putExtra("emailForPass", emailForPass)
             startActivity(intentToResetPass)
         }
         else{

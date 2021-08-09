@@ -1,5 +1,6 @@
 package com.example.tmdcontactsapp.view
 
+import android.content.Intent
 import android.os.Bundle
 import android.util.Log
 import android.view.View
@@ -7,6 +8,8 @@ import android.widget.Button
 import android.widget.EditText
 import androidx.appcompat.app.AppCompatActivity
 import com.example.tmdcontactsapp.R
+import com.example.tmdcontactsapp.`class`.Preferences.get
+import com.example.tmdcontactsapp.`class`.Preferences.savePrefs
 import com.example.tmdcontactsapp.model.UpdateGroupModel
 import com.example.tmdcontactsapp.service.ContacsAPI
 import com.google.gson.GsonBuilder
@@ -33,11 +36,11 @@ class UpdateGroup : AppCompatActivity() {
         updateGroupNameText = findViewById(R.id.updateGroupNameText)
         updateGroupButton = findViewById(R.id.updateGroupButton)
 
-        val intent = intent
-        groupId = intent.getIntExtra("groupId", 0)
-        userId = intent.getIntExtra("userId", 0)
-        groupName = intent.getStringExtra("groupName")
-        token = intent.getStringExtra("token")
+
+        token = savePrefs().get("token", "nullValue")
+        groupId = savePrefs()["groupId", -1]
+        userId = savePrefs()["userId", -1]
+        groupName = savePrefs()["groupName"]
 
         updateGroupNameText.setText(groupName)
 
@@ -73,9 +76,8 @@ class UpdateGroup : AppCompatActivity() {
                     )
 
                     Log.d("Pretty Printed JSON :", prettyJson)
-                    // val intent = Intent(baseContext, ContactsListFragment::class.java)
-                    // intent.putExtra("token", prettyJson[0])
-                    //  Log.d("Image :", encoded)
+                     val intent = Intent(baseContext, GroupsFragment::class.java)
+                     startActivity(intent)
 
 
                 } else {

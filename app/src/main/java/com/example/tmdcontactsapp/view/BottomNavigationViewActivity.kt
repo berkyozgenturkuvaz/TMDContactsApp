@@ -48,37 +48,21 @@ class BottomNavigationViewActivity : AppCompatActivity() {
                     )
                     return@OnNavigationItemSelectedListener true
                 }
-               /* R.id.addPersonFragment -> {
+                R.id.addPersonFragment -> {
 
                     replaceFragment(
-                        AddPersonFragment.newInstance(
-                            id = id!!,
-                            token = token
-                        )
+                        AddPersonFragment.newInstance()
                     )
 
                     return@OnNavigationItemSelectedListener true
-                }*/
-               /* R.id.profileFragment -> {
+                }
+                R.id.profileFragment -> {
                     replaceFragment(
                         ProfileFragment.newInstance(
-                            userId = id!!,
-                            nameProfile = name,
-                            surnameProfile = surname,
-                            emailProfile = email,
-                            addressProfile = address,
-                            birthDateProfile = birthDate,
-                            cellPhoneProfile = tel,
-                            workPhoneProfile = telBusiness,
-                            homePhoneProfile = telHome,
-                            companyProfile = company,
-                            titleProfile = title,
-                            noteProfile = note,
-                            token = token
                         )
                     )
                     return@OnNavigationItemSelectedListener true
-                }*/
+                }
             }
             false
         }

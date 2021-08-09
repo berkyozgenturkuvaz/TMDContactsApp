@@ -9,6 +9,8 @@ import android.widget.EditText
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import com.example.tmdcontactsapp.R
+import com.example.tmdcontactsapp.`class`.Preferences.savePrefs
+import com.example.tmdcontactsapp.`class`.Preferences.set
 import com.example.tmdcontactsapp.service.ContacsAPI
 import com.google.gson.GsonBuilder
 import com.google.gson.JsonParser
@@ -62,10 +64,11 @@ class Forgot_Password : AppCompatActivity() {
                         )
                     )
 
+                    savePrefs()["verificationCode"] = prettyJson
+                    savePrefs()["emailForPass"] = emailForgotPass.toString()
+
                     Log.d("Pretty Printed JSON :", prettyJson)
                     val intent = Intent(applicationContext, VerificationCode::class.java)
-                    intent.putExtra("verificationCode", prettyJson)
-                    intent.putExtra("emailForPass", emailForgotPass.toString())
                     startActivity(intent)
 
                 } else {

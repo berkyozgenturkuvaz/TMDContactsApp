@@ -7,6 +7,8 @@ import android.view.View
 import android.widget.EditText
 import androidx.appcompat.app.AppCompatActivity
 import com.example.tmdcontactsapp.R
+import com.example.tmdcontactsapp.`class`.Preferences.get
+import com.example.tmdcontactsapp.`class`.Preferences.savePrefs
 import com.example.tmdcontactsapp.model.LoginModel
 import com.example.tmdcontactsapp.model.ResetPasswordModel
 import com.example.tmdcontactsapp.service.ContacsAPI
@@ -33,8 +35,7 @@ class ResetPassword : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_reset_password)
 
-        val intent = intent
-        emailForPass = intent.getStringExtra("emailForPass")
+        emailForPass = savePrefs()["emailForPass", ""]
 
         newPassword = findViewById(R.id.newPasswordText)
         confirmNewPassword = findViewById(R.id.confirmNewPasswordText)

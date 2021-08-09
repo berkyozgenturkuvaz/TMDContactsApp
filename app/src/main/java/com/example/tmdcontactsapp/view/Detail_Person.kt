@@ -45,7 +45,6 @@ class Detail_Person : AppCompatActivity() {
     lateinit var toolbar: Toolbar
     var id: Int? = 0
     var userId: Int? = 0
-   /* lateinit var profilemodel : String*/
 
 
     @SuppressLint("SetTextI18n")
@@ -59,12 +58,7 @@ class Detail_Person : AppCompatActivity() {
         id = savePrefs()["contactsId", -1]
         userId = savePrefs()["userId", -1]
 
-     /*   profilemodel = savePrefs()["userName", ""]
-        val profilemodel : ProfileModel = Gson().fromJson(profilemodel , ProfileModel::class.java)
-        Log.e("String Model: ", profilemodel.name.toString())*/
 
-        //loadData()
-        //loadData2()
         loadDataContact()
 
     }

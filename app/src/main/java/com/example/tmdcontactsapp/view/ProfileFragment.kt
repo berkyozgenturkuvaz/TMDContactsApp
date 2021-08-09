@@ -16,8 +16,12 @@ import android.widget.Toolbar
 import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
 import com.example.tmdcontactsapp.R
-import com.example.tmdcontactsapp.model.UserImageModel
+import com.example.tmdcontactsapp.`class`.Preferences.get
+import com.example.tmdcontactsapp.`class`.Preferences.savePrefs
+import com.example.tmdcontactsapp.`class`.Preferences.set
+import com.example.tmdcontactsapp.model.ProfileModel
 import com.example.tmdcontactsapp.service.ContacsAPI
+import com.google.gson.Gson
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
@@ -60,6 +64,9 @@ class ProfileFragment : Fragment() {
     lateinit var toolbar: Toolbar
 
     private var userId: Int? = 0
+    private var userMail: String? = null
+    private var token: String? = null
+
     private var nameProfile: String? = null
     private var surnameProfile: String? = null
     private var emailProfile: String? = null
@@ -72,43 +79,18 @@ class ProfileFragment : Fragment() {
     private var titleProfile: String? = null
     private var noteProfile: String? = null
     private var photo: String? = ""
-    private var token: String? = null
 
     private val BASE_URL = "http://tmdcontacts-api.dev.tmd"
+
 
 
     companion object {
         @JvmStatic
         fun newInstance(
-            userId: Int,
-            nameProfile: String,
-            surnameProfile: String,
-            emailProfile: String,
-            addressProfile: String,
-            birthDateProfile: String,
-            cellPhoneProfile: String,
-            workPhoneProfile: String,
-            homePhoneProfile: String,
-            companyProfile: String,
-            titleProfile: String,
-            noteProfile: String,
-            token: String
+
         ) =
             ProfileFragment().apply {
                 arguments = Bundle().apply {
-                    putInt(ARG_PARAM12, userId)
-                    putString(ARG_PARAM1, nameProfile)
-                    putString(ARG_PARAM2, surnameProfile)
-                    putString(ARG_PARAM3, emailProfile)
-                    putString(ARG_PARAM4, addressProfile)
-                    putString(ARG_PARAM5, birthDateProfile)
-                    putString(ARG_PARAM6, cellPhoneProfile)
-                    putString(ARG_PARAM7, workPhoneProfile)
-                    putString(ARG_PARAM8, homePhoneProfile)
-                    putString(ARG_PARAM9, companyProfile)
-                    putString(ARG_PARAM10, titleProfile)
-                    putString(ARG_PARAM11, noteProfile)
-                    putString(ARG_PARAM14, token)
 
                 }
             }
@@ -118,19 +100,6 @@ class ProfileFragment : Fragment() {
         super.onCreate(savedInstanceState)
         setHasOptionsMenu(true)
         arguments?.let {
-            userId = it.getInt(ARG_PARAM12, 0)
-            nameProfile = it.getString(ARG_PARAM1)
-            surnameProfile = it.getString(ARG_PARAM2)
-            emailProfile = it.getString(ARG_PARAM3)
-            addressProfile = it.getString(ARG_PARAM4)
-            birthDateProfile = it.getString(ARG_PARAM5)
-            cellPhoneProfile = it.getString(ARG_PARAM6)
-            workPhoneProfile = it.getString(ARG_PARAM7)
-            homePhoneProfile = it.getString(ARG_PARAM8)
-            companyProfile = it.getString(ARG_PARAM9)
-            titleProfile = it.getString(ARG_PARAM10)
-            noteProfile = it.getString(ARG_PARAM11)
-            token = it.getString(ARG_PARAM14)
 
         }
     }
@@ -160,6 +129,11 @@ class ProfileFragment : Fragment() {
         val toolbar = view.findViewById<androidx.appcompat.widget.Toolbar>(R.id.toolbarMenu)
         (requireActivity() as AppCompatActivity).setSupportActionBar(toolbar)
 
+        token = context?.savePrefs()?.get("token", "value")
+        userMail = context?.savePrefs()?.get("userMail", "value")
+
+
+
         loadData()
 
         updateProfile.setOnClickListener {
@@ -188,41 +162,15 @@ class ProfileFragment : Fragment() {
 
     }
 
-//    override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
-//        inflater.inflate(R.menu.main_profile, menu)
-//        super.onCreateOptionsMenu(menu, inflater)
-//    }
-//
-//    override fun onOptionsItemSelected(item: MenuItem): Boolean {
-//        when (item.itemId) {
-//            R.id.Logout -> {
-//                Toast.makeText(requireActivity(), "Logout", Toast.LENGTH_LONG).show()
-//            }
-//            R.id.updateIcon -> {
-//                Toast.makeText(requireActivity(), "Update Profile", Toast.LENGTH_LONG).show()
-//                val intent = Intent(context, Update_Profile::class.java)
-//                intent.putExtra("userId", userId)
-//                intent.putExtra("name", nameProfile)
-//                intent.putExtra("surname", surnameProfile)
-//                intent.putExtra("email", emailProfile)
-//                intent.putExtra("address", addressProfile)
-//                intent.putExtra("birthdate",birthDateProfile)
-//                intent.putExtra("photo", photo)
-//                intent.putExtra("tel",cellPhoneProfile)
-//                intent.putExtra("telBusiness",workPhoneProfile)
-//                intent.putExtra("telHome", homePhoneProfile)
-//                intent.putExtra("company",companyProfile)
-//                intent.putExtra("title",titleProfile)
-//                intent.putExtra("note",noteProfile)
-//                intent.putExtra("token", token)
-//                startActivity(intent)
-//
-//            }
-//        }
-//        return super.onOptionsItemSelected(item)
-//    }
+    override fun onStart() {
+        super.onStart()
 
-    //Get User Image using with email
+
+
+
+    }
+
+    //Get Profile Data using with email
     private fun loadData() {
 
         val retrofit = Retrofit.Builder()
@@ -232,36 +180,53 @@ class ProfileFragment : Fragment() {
 
         val service = retrofit.create(ContacsAPI::class.java)
         val call =
-            emailProfile?.let { service.getUserImage("Bearer " + token.toString(), email = it) }
+            userMail?.let { service.getProfileData("Bearer " + token.toString(), email = it) }
 
-        call?.enqueue(object : Callback<UserImageModel> {
+        call?.enqueue(object : Callback<ProfileModel> {
+            @SuppressLint("SetTextI18n")
             override fun onResponse(
-                call: Call<UserImageModel>,
-                response: Response<UserImageModel>
+                call: Call<ProfileModel>,
+                response: Response<ProfileModel>
             ) {
                 if (response.isSuccessful) {
                     response.body()?.let {
-                        val userImageModel = response.body()
-                        photo = userImageModel?.photo
+                        val profileModels = response.body()
+                        profileNameText.text = "Name: " + profileModels?.name.toString()
+                        profileSurnameText.text = "Surname: " + profileModels?.surname.toString()
+                        profileEmailText.text = "Email: " + profileModels?.email.toString()
+                        profileAddressText.text = "Address: " + profileModels?.address.toString()
+                        profileBirthdayText.text = "Birthdate: " + profileModels?.birthDate.toString()
+                        profileCellphoneText.text = "Tel: " + profileModels?.tel.toString()
+                        profileWorkphoneText.text = "Work Tel: " + profileModels?.telBusiness.toString()
+                        profileHomephoneText.text = "Home Tel: " + profileModels?.telHome.toString()
+                        profileCompanyText.text = "Company: " + profileModels?.company.toString()
+                        profileTitleText.text = "Title: " + profileModels?.title.toString()
+                        profileNoteText.text = "Note: " + profileModels?.note.toString()
+                        photo = profileModels?.photo
 
-                        val imageBytes = Base64.decode(photo, Base64.DEFAULT)
+                        val imageBytes = Base64.decode(photo, 0)
                         val decodedImage =
                             BitmapFactory.decodeByteArray(imageBytes, 0, imageBytes.size)
                         profileImageView.setImageBitmap(decodedImage)
 
-                    }
+                        context!!.savePrefs()["userProfile"] = Gson().toJson(profileModels)
+                        onStart()
 
+
+                    }
                 } else {
                     Log.e("RETROFIT_ERROR", response.code().toString())
                 }
+
             }
 
-            override fun onFailure(call: Call<UserImageModel>, t: Throwable) {
+            override fun onFailure(call: Call<ProfileModel>, t: Throwable) {
                 t.printStackTrace()
             }
         })
 
     }
+
 
     fun updateProfile() {
         val intent = Intent(context, Update_Profile::class.java)

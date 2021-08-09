@@ -124,9 +124,6 @@ class GroupDetails : AppCompatActivity() {
 //                Toast.makeText(applicationContext, "Person Added", Toast.LENGTH_LONG)
 //                    .show()
                 val intent2 = Intent(applicationContext, AddGroupContact::class.java)
-                intent2.putExtra("id", userId)
-                intent2.putExtra("groupId", groupId)
-                intent2.putExtra("token", token)
                 startActivity(intent2)
             }
             R.id.deleteButtonGroupDetails -> {
@@ -140,10 +137,6 @@ class GroupDetails : AppCompatActivity() {
                 Toast.makeText(applicationContext, "Person Added", Toast.LENGTH_LONG)
                     .show()
                 val intent = Intent(applicationContext, UpdateGroup::class.java)
-                intent.putExtra("groupId", groupId)
-                intent.putExtra("userId", userId)
-                intent.putExtra("groupName", groupName)
-                intent.putExtra("token", token)
                 startActivity(intent)
             }
         }
@@ -280,18 +273,11 @@ class GroupDetails : AppCompatActivity() {
 
     fun updateGroup(view: View) {
         val intent = Intent(applicationContext, UpdateGroup::class.java)
-        intent.putExtra("groupId", groupId)
-        intent.putExtra("userId", userId)
-        intent.putExtra("groupName", groupName)
-        intent.putExtra("token", token)
         startActivity(intent)
     }
 
     fun addGroupContactButton(view: View) {
         val intent2 = Intent(applicationContext, AddGroupContact::class.java)
-        intent2.putExtra("id", userId)
-        intent2.putExtra("groupId", groupId)
-        intent2.putExtra("token", token)
         startActivity(intent2)
     }
 

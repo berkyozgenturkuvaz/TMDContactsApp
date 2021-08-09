@@ -7,6 +7,8 @@ import android.view.View
 import android.widget.EditText
 import androidx.appcompat.app.AppCompatActivity
 import com.example.tmdcontactsapp.R
+import com.example.tmdcontactsapp.`class`.Preferences.get
+import com.example.tmdcontactsapp.`class`.Preferences.savePrefs
 import com.example.tmdcontactsapp.model.ChangePasswordModel
 import com.example.tmdcontactsapp.service.ContacsAPI
 import com.google.gson.GsonBuilder
@@ -33,9 +35,8 @@ class ChangePassword : AppCompatActivity() {
         newPassword = findViewById(R.id.newPasswordText)
         confirmPassword = findViewById(R.id.confirmPasswordText)
 
-        val intent = intent
-        email = intent.getStringExtra("email")
-        token = intent.getStringExtra("token")
+        token = savePrefs().get("token", "value")
+        email = savePrefs().get("userMail", "value")
 
     }
 
@@ -72,7 +73,7 @@ class ChangePassword : AppCompatActivity() {
                     )
 
                     Log.d("Pretty Printed JSON :", prettyJson)
-                    val intent = Intent(applicationContext, MainActivity::class.java)
+                    val intent = Intent(applicationContext, BottomNavigationViewActivity::class.java)
                     startActivity(intent)
 
                 } else {

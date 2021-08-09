@@ -2,7 +2,6 @@ package com.example.tmdcontactsapp.view
 
 import android.app.Activity
 import android.content.Intent
-import android.content.SharedPreferences
 import android.content.pm.PackageManager
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
@@ -23,17 +22,17 @@ import androidx.appcompat.widget.Toolbar
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import com.example.tmdcontactsapp.R
+import com.example.tmdcontactsapp.`class`.Preferences.get
+import com.example.tmdcontactsapp.`class`.Preferences.savePrefs
+import com.example.tmdcontactsapp.model.ProfileModel
 import com.example.tmdcontactsapp.model.UpdateProfileModel
-import com.example.tmdcontactsapp.model.UserImageModel
 import com.example.tmdcontactsapp.service.ContacsAPI
+import com.google.gson.Gson
 import com.google.gson.GsonBuilder
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
-import retrofit2.Call
-import retrofit2.Callback
-import retrofit2.Response
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 import java.io.ByteArrayOutputStream
@@ -61,27 +60,44 @@ class Update_Profile : AppCompatActivity() {
 
 
     var userId: Int? = 0
-    private var name: String? = null
-    private var surname: String? = null
-    private var email: String? = null
-    private var address: String? = null
-    private var birthDate: String? = null
-    private var tel: String? = null
-    private var telBusiness: String? = null
-    private var telHome: String? = null
-    private var company: String? = null
-    private var title: String? = null
-    private var note: String? = null
     private var photo: String? = ""
-    private var token : String? = null
-    private val BASE_URL = "http://tmdcontacts-api.dev.tmd"
-    lateinit var sharedPreferences : SharedPreferences
+    private var token: String? = null
+    private var profilemodel: String? = null
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_update_profile)
 
+        init()
+
+        token = savePrefs().get("token", "nullValue")
+        userId = savePrefs()["userId", -1]
+
+        profilemodel = savePrefs()["userProfile", ""]
+        val profilemodel: ProfileModel = Gson().fromJson(profilemodel, ProfileModel::class.java)
+        Log.e("String Model: ", profilemodel.name.toString())
+
+        updateProfileNameText.setText(profilemodel.name)
+        updateProfileSurnameText.setText(profilemodel.surname)
+        updateProfileEmailText.setText(profilemodel.email)
+        updateProfileAddressText.setText(profilemodel.address)
+        updateProfileBirthdayText.setText(profilemodel.birthDate)
+        updateProfileCellphoneText.setText(profilemodel.tel)
+        updateProfileWorkphoneText.setText(profilemodel.telBusiness)
+        updateProfileHomephoneText.setText(profilemodel.telHome)
+        updateProfileCompanyText.setText(profilemodel.company)
+        updateProfileTitleText.setText(profilemodel.title)
+        updateProfileNoteText.setText(profilemodel.note)
+        photo = profilemodel.photo
+
+        val imageBytes = Base64.decode(photo, Base64.DEFAULT)
+        val decodedImage = BitmapFactory.decodeByteArray(imageBytes, 0, imageBytes.size)
+        photoUpdateProfile.setImageBitmap(decodedImage)
+
+    }
+
+    fun init() {
         photoUpdateProfile = findViewById(R.id.photoUpdateProfile)
         updateProfileNameText = findViewById(R.id.updateProfileNameText)
         updateProfileSurnameText = findViewById(R.id.updateProfileSurnameText)
@@ -96,39 +112,7 @@ class Update_Profile : AppCompatActivity() {
         updateProfileNoteText = findViewById(R.id.updateProfileNoteText)
         updateProfileUpdateButton = findViewById(R.id.updateProfileButton)
 
-
-        val intent = intent
-        userId = intent.getIntExtra("userId", 0)
-        name = intent.getStringExtra("name")
-        surname = intent.getStringExtra("surname")
-        email = intent.getStringExtra("email")
-        address = intent.getStringExtra("address")
-        birthDate = intent.getStringExtra("birthdate")
-        tel = intent.getStringExtra("tel")
-        telBusiness = intent.getStringExtra("telBusiness")
-        telHome = intent.getStringExtra("telHome")
-        company = intent.getStringExtra("company")
-        title = intent.getStringExtra("title")
-        note = intent.getStringExtra("note")
-        token = intent.getStringExtra("token")
-
-        updateProfileNameText.setText(name)
-        updateProfileSurnameText.setText(surname)
-        updateProfileEmailText.setText(email)
-        updateProfileAddressText.setText(address)
-        updateProfileBirthdayText.setText(birthDate)
-        updateProfileCellphoneText.setText(tel)
-        updateProfileWorkphoneText.setText(telBusiness)
-        updateProfileHomephoneText.setText(telHome)
-        updateProfileCompanyText.setText(company)
-        updateProfileTitleText.setText(title)
-        updateProfileNoteText.setText(note)
-
-        loadData()
-
-
     }
-
 
     override fun onCreateOptionsMenu(menu: Menu?): Boolean {
         menuInflater.inflate(R.menu.main_title, menu)
@@ -198,44 +182,6 @@ class Update_Profile : AppCompatActivity() {
         super.onActivityResult(requestCode, resultCode, data)
     }
 
-    //Get User Image using with email
-    private fun loadData() {
-
-        val retrofit = Retrofit.Builder()
-            .baseUrl(BASE_URL)
-            .addConverterFactory(GsonConverterFactory.create())
-            .build()
-
-        val service = retrofit.create(ContacsAPI::class.java)
-        val call = email?.let { service.getUserImage("Bearer " + token.toString(), email = it) }
-
-        call?.enqueue(object : Callback<UserImageModel> {
-            override fun onResponse(
-                call: Call<UserImageModel>,
-                response: Response<UserImageModel>
-            ) {
-                if (response.isSuccessful) {
-                    response.body()?.let {
-                        val userImageModel = response.body()
-                        photo = userImageModel?.photo
-
-                        val imageBytes = Base64.decode(photo, Base64.DEFAULT)
-                        val decodedImage = BitmapFactory.decodeByteArray(imageBytes, 0, imageBytes.size)
-                        photoUpdateProfile.setImageBitmap(decodedImage)
-
-                    }
-
-                } else {
-                    Log.e("RETROFIT_ERROR", response.code().toString())
-                }
-            }
-
-            override fun onFailure(call: Call<UserImageModel>, t: Throwable) {
-                t.printStackTrace()
-            }
-        })
-
-    }
 
     //POST Function
     fun rawJSON() {
@@ -276,7 +222,10 @@ class Update_Profile : AppCompatActivity() {
         )
         CoroutineScope(Dispatchers.IO).launch {
             // Do the POST request and get response
-            val response = service.updateProfile("Bearer " + token.toString() ,updateProfileModel = updateProfileModel)
+            val response = service.updateProfile(
+                "Bearer " + token.toString(),
+                updateProfileModel = updateProfileModel
+            )
 
             withContext(Dispatchers.Main) {
                 if (response.isSuccessful) {
@@ -291,7 +240,6 @@ class Update_Profile : AppCompatActivity() {
 
                     Log.d("Pretty Printed JSON :", prettyJson)
                     Log.d("Image :", encoded)
-
 
                 } else {
 
@@ -360,16 +308,13 @@ class Update_Profile : AppCompatActivity() {
 //            startActivity(intentHome)
 //        }
         rawJSON()
-        //  val intentHome = Intent(applicationContext, BottomNavigationViewActivity::class.java)
-        //startActivity(intentHome)
-        //finish()
+          val intentHome = Intent(applicationContext, BottomNavigationViewActivity::class.java)
+        startActivity(intentHome)
 
     }
 
     fun changePasswordButton(view: View) {
         val intent = Intent(applicationContext, ChangePassword::class.java)
-        intent.putExtra("email", email.toString())
-        intent.putExtra("token",token)
         startActivity(intent)
     }
 

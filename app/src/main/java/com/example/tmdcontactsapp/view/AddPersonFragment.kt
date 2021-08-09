@@ -18,6 +18,8 @@ import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
 import com.example.tmdcontactsapp.R
+import com.example.tmdcontactsapp.`class`.Preferences.get
+import com.example.tmdcontactsapp.`class`.Preferences.savePrefs
 import com.example.tmdcontactsapp.model.AddContactModel
 import com.example.tmdcontactsapp.service.ContacsAPI
 import com.google.gson.GsonBuilder
@@ -52,16 +54,15 @@ class AddPersonFragment : Fragment() {
     lateinit var addPersonNoteText: EditText
     lateinit var addPersonAddButton: Button
     lateinit var toolbar: Toolbar
-    private var id: Int? = null
+
+    private var userId: Int? = null
     private var token: String? = null
 
     companion object {
         @JvmStatic
-        fun newInstance(id: Int, token: String) =
+        fun newInstance() =
             AddPersonFragment().apply {
                 arguments = Bundle().apply {
-                    putInt(ARG_PARAM1, id)
-                    putString(ARG_PARAM2, token)
                 }
             }
     }
@@ -71,9 +72,6 @@ class AddPersonFragment : Fragment() {
         super.onCreate(savedInstanceState)
         setHasOptionsMenu(true)
         arguments?.let {
-            id = it.getInt(ARG_PARAM1)
-            token = it.getString(ARG_PARAM2)
-
 
         }
     }
@@ -98,6 +96,9 @@ class AddPersonFragment : Fragment() {
         addPersonTitleText = view.findViewById(R.id.addPersonTitleText)
         addPersonNoteText = view.findViewById(R.id.addPersonNoteText)
         addPersonAddButton = view.findViewById(R.id.addPersonAddButton)
+
+        token = context?.savePrefs()?.get("token","nullValue")
+        userId = context?.savePrefs()?.get("userId", -1)
 
 
         val toolbar = view.findViewById<androidx.appcompat.widget.Toolbar>(R.id.toolbarMenu)
@@ -279,7 +280,7 @@ class AddPersonFragment : Fragment() {
             addPersonCompanyText.text.toString(),
             addPersonTitleText.text.toString(),
             addPersonNoteText.text.toString(),
-            id!!
+            userId!!
         )
         CoroutineScope(Dispatchers.IO).launch {
             // Do the POST request and get response

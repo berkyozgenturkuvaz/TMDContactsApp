@@ -56,10 +56,8 @@ class ContactsListFragment : Fragment() {
     lateinit var searchText: EditText
     private var userId: Int? = 0
     private var name: String? = null
-    private var name2: String? = null
     private var surname: String? = null
     private var photo: String? = ""
-    private var email: String? = null
 
     lateinit var homeNameText: TextView
     lateinit var homeSurnameText: TextView
@@ -147,14 +145,6 @@ class ContactsListFragment : Fragment() {
 
     }
 
-    /*@SuppressLint("SetTextI18n")
-    override fun onActivityCreated(savedInstanceState: Bundle?) {
-        super.onActivityCreated(savedInstanceState)
-
-        homeNameText.text = name.toString()
-        homeSurnameText.text = surname.toString()
-
-    }*/
 
     override fun onStart() {
         super.onStart()
@@ -192,8 +182,7 @@ class ContactsListFragment : Fragment() {
                         surname = profileModels?.surname
                         photo = profileModels?.photo
 
-                        /*context!!.savePrefs()
-                            ?.set("userName", Gson().toJson(profileModels))*/
+
 
                         context?.savePrefs()?.set("userId", profileModels?.id)
 

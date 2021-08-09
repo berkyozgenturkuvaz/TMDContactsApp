@@ -1,5 +1,6 @@
 package com.example.tmdcontactsapp.view
 
+import android.content.Intent
 import android.os.Bundle
 import android.text.Editable
 import android.text.TextWatcher
@@ -10,6 +11,8 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.tmdcontactsapp.R
+import com.example.tmdcontactsapp.`class`.Preferences.get
+import com.example.tmdcontactsapp.`class`.Preferences.savePrefs
 import com.example.tmdcontactsapp.adapter.RecyclerViewAdapter
 import com.example.tmdcontactsapp.model.AddGroupContactModel
 import com.example.tmdcontactsapp.model.ContactsModel
@@ -30,7 +33,7 @@ class AddGroupContact : AppCompatActivity() {
     private var contactId: Int? = 0
     private var groupId: Int? = null
     private var token: String? = null
-    private var id: Int? = 0
+    private var userId: Int? = 0
 
     lateinit var addGroupContactRecyclerView: RecyclerView
     private val BASE_URL = "http://tmdcontacts-api.dev.tmd"
@@ -44,10 +47,10 @@ class AddGroupContact : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_add_group_contact)
 
-        val intent = intent
-        id = intent.getIntExtra("id", 0)
-        groupId = intent.getIntExtra("groupId", 0)
-        token = intent.getStringExtra("token")
+
+        token = savePrefs().get("token", "nullValue")
+        groupId = savePrefs()["groupId", -1]
+        userId = savePrefs()["userId", -1]
 
         loadData()
 
@@ -96,7 +99,7 @@ class AddGroupContact : AppCompatActivity() {
             .build()
 
         val service = retrofit.create(ContacsAPI::class.java)
-        val call = id?.let { service.getData("Bearer " + token.toString(), userId = it) }
+        val call = userId?.let { service.getData("Bearer " + token.toString(), userId = it) }
 
         call?.enqueue(object : Callback<List<ContactsModel>> {
             override fun onResponse(
@@ -172,7 +175,8 @@ class AddGroupContact : AppCompatActivity() {
                     )
 
                     Log.d("Pretty Printed JSON :", prettyJson)
-
+                    val intent = Intent(applicationContext,GroupDetails::class.java)
+                    startActivity(intent)
 
                 } else {
 
