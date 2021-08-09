@@ -9,6 +9,7 @@ import androidx.appcompat.app.AppCompatActivity
 import com.example.tmdcontactsapp.R
 import com.example.tmdcontactsapp.`class`.Preferences.get
 import com.example.tmdcontactsapp.`class`.Preferences.savePrefs
+import com.example.tmdcontactsapp.`class`.Preferences.set
 import com.example.tmdcontactsapp.model.LoginModel
 import com.example.tmdcontactsapp.model.ResetPasswordModel
 import com.example.tmdcontactsapp.service.ContacsAPI
@@ -75,13 +76,11 @@ class ResetPassword : AppCompatActivity() {
                     Log.d("Pretty Printed JSON :", prettyJson)
                     rawJSON2()
                 } else {
-
                     Log.e("RETROFIT_ERROR", response.code().toString())
                     Log.e("RETROFIT_ERROR", response.message().toString())
                     Log.e("RETROFIT_ERROR", response.body().toString())
                     Log.e("RETROFIT_ERROR", response.errorBody().toString())
                     Log.e("RETROFIT_ERROR", response.toString())
-
                 }
             }
         }
@@ -126,9 +125,11 @@ class ResetPassword : AppCompatActivity() {
                     Log.d("Token :", token!!)
                     Log.d("Expiration Date :", expiration!!)
 
+                    savePrefs()["expiration"] = expiration
+                    savePrefs()["token"] = token
+                    savePrefs()["userMail"] = emailForPass.toString()
+
                     val intent = Intent(applicationContext, BottomNavigationViewActivity::class.java)
-                    intent.putExtra("userMail", emailForPass)
-                    intent.putExtra("token",token)
                     startActivity(intent)
 
                 } else {
