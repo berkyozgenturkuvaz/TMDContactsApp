@@ -162,7 +162,11 @@ class GroupDetails : AppCompatActivity() {
 
                     val deleteGroupContactModel = DeleteGroupContactModel(
                         groupId!!,
-                        groupDetailsModel!![viewHolder.absoluteAdapterPosition].id
+                        if (filteredList!!.isEmpty()) {
+                            groupDetailsModel!![viewHolder.absoluteAdapterPosition].id
+                        } else {
+                            filteredList!![viewHolder.absoluteAdapterPosition].id
+                        }
                     )
                     CoroutineScope(Dispatchers.IO).launch {
                         // Do the POST request and get response
@@ -183,11 +187,26 @@ class GroupDetails : AppCompatActivity() {
                                     )
                                 )
 
-                                Toast.makeText(
-                                    applicationContext,
-                                    groupDetailsModel!![viewHolder.adapterPosition].name + "isimli kişi gruptan silindi.",
-                                    Toast.LENGTH_LONG
-                                ).show()
+                                if (filteredList!!.isEmpty()) {
+                                    Toast.makeText(
+                                        applicationContext,
+                                        groupDetailsModel!![viewHolder.adapterPosition].name + "isimli kişi gruptan silindi.",
+                                        Toast.LENGTH_LONG
+                                    ).show()
+                                } else {
+                                    Toast.makeText(
+                                        applicationContext,
+                                        filteredList!![viewHolder.adapterPosition].name + "isimli kişi gruptan silindi.",
+                                        Toast.LENGTH_LONG
+                                    ).show()
+                                }
+
+                                if (filteredList!!.isEmpty()) {
+                                    groupDetailsModel!!.removeAt(viewHolder.adapterPosition)
+                                } else {
+                                    filteredList!!.removeAt(viewHolder.adapterPosition)
+                                }
+
                                 groupDetailsModel!!.removeAt(viewHolder.adapterPosition)
                                 groupDetailsRecyclerViewAdapter!!.notifyDataSetChanged()
 //                                recyclerViewAdapter!!.deleteItem(contactModels!![viewHolder.absoluteAdapterPosition].id)

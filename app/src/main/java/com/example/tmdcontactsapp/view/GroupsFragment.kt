@@ -174,7 +174,11 @@ class GroupsFragment : Fragment() {
                         val response =
                             service.deleteGroup(
                                 "Bearer " + token.toString(),
-                                id = groupsContactModels!![viewHolder.absoluteAdapterPosition].id
+                                id = if (filteredList!!.isEmpty()) {
+                                    groupsContactModels!![viewHolder.absoluteAdapterPosition].id
+                                } else {
+                                    filteredList!![viewHolder.absoluteAdapterPosition].id
+                                }
                             )
 
                         withContext(Dispatchers.Main) {
@@ -188,12 +192,26 @@ class GroupsFragment : Fragment() {
                                     )
                                 )
 
-                                Toast.makeText(
-                                    context,
-                                    groupsContactModels!![viewHolder.adapterPosition].name + "isimli grup silindi.",
-                                    Toast.LENGTH_LONG
-                                ).show()
-                                groupsContactModels!!.removeAt(viewHolder.adapterPosition)
+                                if (filteredList!!.isEmpty()) {
+                                    Toast.makeText(
+                                        context,
+                                        groupsContactModels!![viewHolder.adapterPosition].name + "isimli grup silindi.",
+                                        Toast.LENGTH_LONG
+                                    ).show()
+                                } else {
+                                    Toast.makeText(
+                                        context,
+                                        filteredList!![viewHolder.adapterPosition].name + "isimli grup silindi.",
+                                        Toast.LENGTH_LONG
+                                    ).show()
+                                }
+
+                                if (filteredList!!.isEmpty()) {
+                                    groupsContactModels!!.removeAt(viewHolder.adapterPosition)
+                                } else {
+                                    filteredList!!.removeAt(viewHolder.adapterPosition)
+                                }
+
                                 groupsRecyclerViewAdapter!!.notifyDataSetChanged()
 //                                recyclerViewAdapter!!.deleteItem(contactModels!![viewHolder.absoluteAdapterPosition].id)
 //                                recyclerViewAdapter!!.notifyDataSetChanged()

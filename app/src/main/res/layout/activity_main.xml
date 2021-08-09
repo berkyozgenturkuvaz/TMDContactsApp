@@ -12,7 +12,7 @@
         android:id="@+id/topViewLogin"
         android:layout_width="0dp"
         android:layout_height="100dp"
-        android:background="#4FBEC8"
+        android:background="@color/colorPrimary"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
@@ -31,6 +31,7 @@
         android:layout_width="150dp"
         android:layout_height="100dp"
         android:layout_marginTop="44dp"
+        android:visibility="gone"
         app:layout_constraintCircleRadius="8dp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.122"
@@ -73,7 +74,6 @@
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginStart="32dp"
-        android:layout_marginTop="16dp"
         android:layout_marginEnd="32dp"
         android:background="@drawable/round_border"
         android:drawableStart="@drawable/email"
@@ -87,7 +87,7 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/tmdLogo" />
+        app:layout_constraintTop_toBottomOf="@+id/medViewLogin" />
 
     <EditText
         android:id="@+id/passwordTextLogin"
@@ -119,7 +119,7 @@
         android:layout_marginEnd="32dp"
         android:onClick="signIn"
         android:text="SIGN IN"
-        android:textColor="@color/colorPrimaryDark"
+        android:textColor="@color/colorPrimary"
         android:textSize="18sp"
         app:cornerRadius="25dp"
         app:layout_constraintEnd_toEndOf="parent"

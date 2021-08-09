@@ -96,6 +96,7 @@ class ContactsListFragment : Fragment() {
         val toolbar = view.findViewById<Toolbar>(R.id.toolbarMenu)
         (requireActivity() as AppCompatActivity).setSupportActionBar(toolbar)
 
+
         //Definition RecyclerView
         homeRecyclerView = view.findViewById(R.id.homeRecyclerView)
         val layoutManager = LinearLayoutManager(context, LinearLayoutManager.VERTICAL, false)
@@ -130,6 +131,7 @@ class ContactsListFragment : Fragment() {
 
         return view
     }
+
 
     fun filter(text: String) {
         filteredList!!.clear()
@@ -225,7 +227,11 @@ class ContactsListFragment : Fragment() {
                         val response =
                             service.deleteContact(
                                 "Bearer " + token.toString(),
-                                id = contactModels!![viewHolder.absoluteAdapterPosition].id
+                                id = if (filteredList!!.isEmpty()) {
+                                    contactModels!![viewHolder.absoluteAdapterPosition].id
+                                } else {
+                                    filteredList!![viewHolder.absoluteAdapterPosition].id
+                                }
                             )
 
                         withContext(Dispatchers.Main) {
@@ -239,12 +245,27 @@ class ContactsListFragment : Fragment() {
                                     )
                                 )
 
-                                Toast.makeText(
-                                    context,
-                                    contactModels!![viewHolder.adapterPosition].name + "isimli kullanıcı silindi.",
-                                    Toast.LENGTH_LONG
-                                ).show()
-                                contactModels!!.removeAt(viewHolder.adapterPosition)
+                                if (filteredList!!.isEmpty()) {
+                                    Toast.makeText(
+                                        context,
+                                        contactModels!![viewHolder.adapterPosition].name + "isimli kullanıcı silindi.",
+                                        Toast.LENGTH_LONG
+                                    ).show()
+                                } else {
+                                    Toast.makeText(
+                                        context,
+                                        filteredList!![viewHolder.adapterPosition].name + "isimli kullanıcı silindi.",
+                                        Toast.LENGTH_LONG
+                                    ).show()
+                                }
+
+
+                                if (filteredList!!.isEmpty()) {
+                                    contactModels!!.removeAt(viewHolder.adapterPosition)
+                                } else {
+                                    filteredList!!.removeAt(viewHolder.adapterPosition)
+                                }
+
                                 recyclerViewAdapter!!.notifyDataSetChanged()
 //                                recyclerViewAdapter!!.deleteItem(contactModels!![viewHolder.absoluteAdapterPosition].id)
 //                                recyclerViewAdapter!!.notifyDataSetChanged()

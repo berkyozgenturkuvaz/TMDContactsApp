@@ -263,6 +263,7 @@ android:orientation="vertical"
             android:gravity="center"
             android:onClick="addPersonButton"
             android:text="ADD"
+            android:textColor="@color/colorPrimary"
             android:textSize="18sp"
             android:textStyle="bold"
             app:cornerRadius="25dp" />
