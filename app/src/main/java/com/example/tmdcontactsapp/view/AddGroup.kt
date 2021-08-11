@@ -37,6 +37,7 @@ class AddGroup : AppCompatActivity() {
         userId = savePrefs()["userId", -1]
     }
 
+
     //POST Function
     fun rawJSON() {
 

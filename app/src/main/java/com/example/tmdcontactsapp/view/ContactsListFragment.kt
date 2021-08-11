@@ -24,6 +24,7 @@ import com.example.tmdcontactsapp.R
 import com.example.tmdcontactsapp.`class`.Preferences.get
 import com.example.tmdcontactsapp.`class`.Preferences.savePrefs
 import com.example.tmdcontactsapp.`class`.Preferences.set
+import com.example.tmdcontactsapp.`class`.RetrofitOperations
 import com.example.tmdcontactsapp.`class`.SwipeGesture
 import com.example.tmdcontactsapp.adapter.RecyclerViewAdapter
 import com.example.tmdcontactsapp.model.ContactsModel
@@ -96,6 +97,8 @@ class ContactsListFragment : Fragment() {
         val toolbar = view.findViewById<Toolbar>(R.id.toolbarMenu)
         (requireActivity() as AppCompatActivity).setSupportActionBar(toolbar)
 
+        token = context?.savePrefs()?.get("token", "value")
+        userMail = context?.savePrefs()?.get("userMail", "value")
 
         //Definition RecyclerView
         homeRecyclerView = view.findViewById(R.id.homeRecyclerView)
@@ -106,12 +109,7 @@ class ContactsListFragment : Fragment() {
         homeSurnameText = view.findViewById(R.id.homeSurnameText)
         contactImage = view.findViewById(R.id.contactImage)
 
-        token = context?.savePrefs()?.get("token", "value")
-        userMail = context?.savePrefs()?.get("userMail", "value")
-
         loadData()
-
-
 
         searchText = view.findViewById(R.id.searchText)
         searchText.addTextChangedListener(object : TextWatcher {
@@ -142,9 +140,7 @@ class ContactsListFragment : Fragment() {
                 filteredList!!.add(item)
             }
         }
-
         recyclerViewAdapter!!.filterList(filteredList!!)
-
     }
 
 
@@ -159,49 +155,45 @@ class ContactsListFragment : Fragment() {
         contactImage.setImageBitmap(decodedImage)
     }
 
+
     //Get Profile Data using with email
     private fun loadData() {
 
-        val retrofit = Retrofit.Builder()
-            .baseUrl(BASE_URL)
-            .addConverterFactory(GsonConverterFactory.create())
-            .build()
-
-        val service = retrofit.create(ContacsAPI::class.java)
-        val call =
-            userMail?.let { service.getProfileData("Bearer " + token.toString(), email = it) }
-
-        call?.enqueue(object : Callback<ProfileModel> {
-            override fun onResponse(
-                call: Call<ProfileModel>,
-                response: Response<ProfileModel>
-            ) {
-                if (response.isSuccessful) {
-                    response.body()?.let {
-                        val profileModels = response.body()
-                        userId = profileModels?.id
-                        name = profileModels?.name
-                        surname = profileModels?.surname
-                        photo = profileModels?.photo
+        RetrofitOperations.instance.getProfileData(
+            "Bearer " + token.toString(),
+            email = userMail.toString()
+        )
+            .enqueue(object : Callback<ProfileModel> {
+                override fun onResponse(
+                    call: Call<ProfileModel>,
+                    response: Response<ProfileModel>
+                ) {
+                    if (response.isSuccessful) {
+                        response.body()?.let {
+                            val profileModels = response.body()
+                            userId = profileModels?.id
+                            name = profileModels?.name
+                            surname = profileModels?.surname
+                            photo = profileModels?.photo
 
 
 
-                        context?.savePrefs()?.set("userId", profileModels?.id)
+                            context?.savePrefs()?.set("userId", profileModels?.id)
 
-                        loadDataContact()
-                        onStart()
+                            loadDataContact()
+                            onStart()
 
+                        }
+                    } else {
+                        Log.e("RETROFIT_ERROR", response.code().toString())
                     }
-                } else {
-                    Log.e("RETROFIT_ERROR", response.code().toString())
+
                 }
 
-            }
-
-            override fun onFailure(call: Call<ProfileModel>, t: Throwable) {
-                t.printStackTrace()
-            }
-        })
+                override fun onFailure(call: Call<ProfileModel>, t: Throwable) {
+                    t.printStackTrace()
+                }
+            })
 
     }
 
@@ -284,54 +276,51 @@ class ContactsListFragment : Fragment() {
     }
 
     private fun loadDataContact() {
-        val retrofit = Retrofit.Builder()
-            .baseUrl(BASE_URL)
-            .addConverterFactory(GsonConverterFactory.create())
-            .build()
+        userId?.let {
+            RetrofitOperations.instance.getData(
+                "Bearer " + token.toString(),
+                userId = it
+            )
+        }
+            ?.enqueue(object : Callback<List<ContactsModel>> {
+                override fun onResponse(
+                    call: Call<List<ContactsModel>>,
+                    response: Response<List<ContactsModel>>
+                ) {
+                    if (response.isSuccessful) {
+                        response.body()?.let {
+                            contactModels = ArrayList(it)
+                            contactModels?.let { contactsmodel ->
+                                recyclerViewAdapter = RecyclerViewAdapter(contactsmodel)
+                                recyclerViewAdapter?.setType(RecyclerViewAdapter.VIEW_TYPE_ONE)
+                                recyclerViewAdapter?.setListener(object :
+                                    RecyclerViewAdapter.Listener {
+                                    override fun onItemClick(contactsModel: ContactsModel) {
+                                        Toast.makeText(
+                                            context,
+                                            "${contactsModel.name}",
+                                            Toast.LENGTH_LONG
+                                        ).show()
 
-        val service = retrofit.create(ContacsAPI::class.java)
-        val call = userId!!.let { service.getData("Bearer " + token.toString(), userId = it) }
+                                        context?.savePrefs()?.set("contactsId", contactsModel.id)
 
-        call.enqueue(object : Callback<List<ContactsModel>> {
-            override fun onResponse(
-                call: Call<List<ContactsModel>>,
-                response: Response<List<ContactsModel>>
-            ) {
-                if (response.isSuccessful) {
-                    response.body()?.let {
-                        contactModels = ArrayList(it)
-                        contactModels?.let { contactsmodel ->
-                            recyclerViewAdapter = RecyclerViewAdapter(contactsmodel)
-                            recyclerViewAdapter?.setType(RecyclerViewAdapter.VIEW_TYPE_ONE)
-                            recyclerViewAdapter?.setListener(object : RecyclerViewAdapter.Listener {
-                                override fun onItemClick(contactsModel: ContactsModel) {
-                                    Toast.makeText(
-                                        context,
-                                        "${contactsModel.name}",
-                                        Toast.LENGTH_LONG
-                                    ).show()
+                                        val intent = Intent(context, Detail_Person::class.java)
+                                        startActivity(intent)
+                                    }
 
-
-                                    context?.savePrefs()?.set("contactsId", contactsModel.id)
-
-                                    val intent = Intent(context, Detail_Person::class.java)
-                                    startActivity(intent)
-                                }
-
-                            })
-
-                            val touchHelper = ItemTouchHelper(swipeGesture)
-                            touchHelper.attachToRecyclerView(homeRecyclerView)
-                            homeRecyclerView.adapter = recyclerViewAdapter
+                                })
+                                val touchHelper = ItemTouchHelper(swipeGesture)
+                                touchHelper.attachToRecyclerView(homeRecyclerView)
+                                homeRecyclerView.adapter = recyclerViewAdapter
+                            }
                         }
                     }
-
                 }
-            }
 
-            override fun onFailure(call: Call<List<ContactsModel>>, t: Throwable) {
-                t.printStackTrace()
-            }
-        })
+                override fun onFailure(call: Call<List<ContactsModel>>, t: Throwable) {
+                    t.printStackTrace()
+                    t.message
+                }
+            })
     }
 }
