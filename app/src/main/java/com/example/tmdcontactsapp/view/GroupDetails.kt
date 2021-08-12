@@ -24,13 +24,10 @@ import com.example.tmdcontactsapp.`class`.SwipeGesture
 import com.example.tmdcontactsapp.adapter.RecViewAdapterGroupDetails
 import com.example.tmdcontactsapp.model.DeleteGroupContactModel
 import com.example.tmdcontactsapp.model.GroupDetailsModel
-import com.example.tmdcontactsapp.service.ContacsAPI
 import com.google.gson.GsonBuilder
 import com.google.gson.JsonParser
 import kotlinx.android.synthetic.main.activity_group_details.*
 import kotlinx.coroutines.*
-import retrofit2.Retrofit
-import retrofit2.converter.gson.GsonConverterFactory
 
 class GroupDetails : AppCompatActivity() {
 
@@ -146,15 +143,6 @@ class GroupDetails : AppCompatActivity() {
                 ItemTouchHelper.LEFT -> {
                     //POST Function
 
-                    // Create Retrofit
-                    val retrofit = Retrofit.Builder()
-                        .addConverterFactory(GsonConverterFactory.create())
-                        .baseUrl("http://tmdcontacts-api.dev.tmd")
-                        .build()
-
-                    // Create Service
-                    val service = retrofit.create(ContacsAPI::class.java)
-
                     val deleteGroupContactModel = DeleteGroupContactModel(
                         groupId!!,
                         if (filteredList!!.isEmpty()) {
@@ -163,10 +151,11 @@ class GroupDetails : AppCompatActivity() {
                             filteredList!![viewHolder.absoluteAdapterPosition].id
                         }
                     )
-                    CoroutineScope(Dispatchers.IO).launch {
+
+                    job = CoroutineScope(Dispatchers.IO).launch {
                         // Do the POST request and get response
                         val response =
-                            service.deleteGroupContact(
+                            RetrofitOperations.instance.deleteGroupContact(
                                 "Bearer " + token.toString(),
                                 deleteGroupContactModel = deleteGroupContactModel
                             )

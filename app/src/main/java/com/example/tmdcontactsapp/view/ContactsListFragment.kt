@@ -28,12 +28,9 @@ import com.example.tmdcontactsapp.`class`.RetrofitOperations
 import com.example.tmdcontactsapp.`class`.SwipeGesture
 import com.example.tmdcontactsapp.adapter.RecyclerViewAdapter
 import com.example.tmdcontactsapp.model.ContactsModel
-import com.example.tmdcontactsapp.service.ContacsAPI
 import com.google.gson.GsonBuilder
 import com.google.gson.JsonParser
 import kotlinx.coroutines.*
-import retrofit2.Retrofit
-import retrofit2.converter.gson.GsonConverterFactory
 
 private const val ARG_PARAM5 = "param5"
 private const val ARG_PARAM6 = "param6"
@@ -190,19 +187,10 @@ class ContactsListFragment : Fragment() {
                 ItemTouchHelper.LEFT -> {
                     //POST Function
 
-                    // Create Retrofit
-                    val retrofit = Retrofit.Builder()
-                        .addConverterFactory(GsonConverterFactory.create())
-                        .baseUrl("http://tmdcontacts-api.dev.tmd")
-                        .build()
-
-                    // Create Service
-                    val service = retrofit.create(ContacsAPI::class.java)
-
-                    CoroutineScope(Dispatchers.IO).launch {
+                    job = CoroutineScope(Dispatchers.IO).launch {
                         // Do the POST request and get response
                         val response =
-                            service.deleteContact(
+                            RetrofitOperations.instance.deleteContact(
                                 "Bearer " + token.toString(),
                                 id = if (filteredList!!.isEmpty()) {
                                     contactModels!![viewHolder.absoluteAdapterPosition].id
@@ -270,7 +258,7 @@ class ContactsListFragment : Fragment() {
                 )
             }
 
-            withContext(Dispatchers.Main){
+            withContext(Dispatchers.Main) {
 
                 if (response?.isSuccessful!!) {
                     response.body()?.let {
@@ -300,7 +288,6 @@ class ContactsListFragment : Fragment() {
                         }
                     }
                 }
-
 
 
             }

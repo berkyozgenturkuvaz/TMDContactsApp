@@ -1,5 +1,6 @@
 package com.example.tmdcontactsapp.view
 
+import android.annotation.SuppressLint
 import android.content.Intent
 import android.os.Bundle
 import android.text.Editable
@@ -25,12 +26,9 @@ import com.example.tmdcontactsapp.`class`.RetrofitOperations
 import com.example.tmdcontactsapp.`class`.SwipeGesture
 import com.example.tmdcontactsapp.adapter.RecyclerViewAdapterGroups
 import com.example.tmdcontactsapp.model.GroupsModel
-import com.example.tmdcontactsapp.service.ContacsAPI
 import com.google.gson.GsonBuilder
 import com.google.gson.JsonParser
 import kotlinx.coroutines.*
-import retrofit2.Retrofit
-import retrofit2.converter.gson.GsonConverterFactory
 
 private const val ARG_PARAM1 = "param1"
 private const val ARG_PARAM2 = "param2"
@@ -149,25 +147,17 @@ class GroupsFragment : Fragment() {
     }*/
 
     val swipeGesture = object : SwipeGesture() {
+        @SuppressLint("NotifyDataSetChanged")
         override fun onSwiped(viewHolder: RecyclerView.ViewHolder, direction: Int) {
 
             when (direction) {
                 ItemTouchHelper.LEFT -> {
                     //POST Function
 
-                    // Create Retrofit
-                    val retrofit = Retrofit.Builder()
-                        .addConverterFactory(GsonConverterFactory.create())
-                        .baseUrl("http://tmdcontacts-api.dev.tmd")
-                        .build()
-
-                    // Create Service
-                    val service = retrofit.create(ContacsAPI::class.java)
-
-                    CoroutineScope(Dispatchers.IO).launch {
+                    job = CoroutineScope(Dispatchers.IO).launch {
                         // Do the POST request and get response
                         val response =
-                            service.deleteGroup(
+                            RetrofitOperations.instance.deleteGroup(
                                 "Bearer " + token.toString(),
                                 id = if (filteredList!!.isEmpty()) {
                                     groupsContactModels!![viewHolder.absoluteAdapterPosition].id
