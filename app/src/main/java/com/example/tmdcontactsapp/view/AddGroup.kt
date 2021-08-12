@@ -26,6 +26,11 @@ class AddGroup : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_add_group)
 
+        init()
+
+    }
+
+    fun init(){
         addGroupNameText = findViewById(R.id.addGroupNameText)
         addGroupButton = findViewById(R.id.addGroupButton)
 
@@ -33,13 +38,13 @@ class AddGroup : AppCompatActivity() {
         userId = savePrefs()["userId", -1]
     }
 
-
     //POST Function
     fun rawJSON() {
 
-        val addGroupModel = AddGroupModel(addGroupNameText.text.toString(), userId!!)
-
         job = CoroutineScope(Dispatchers.IO).launch {
+
+            val addGroupModel = AddGroupModel(addGroupNameText.text.toString(), userId!!)
+
             // Do the POST request and get response
             val response =
                 RetrofitOperations.instance.addGroup(

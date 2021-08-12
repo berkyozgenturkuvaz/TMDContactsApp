@@ -29,9 +29,13 @@ class UpdateGroup : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_update_group)
 
+        init()
+
+    }
+
+    fun init(){
         updateGroupNameText = findViewById(R.id.updateGroupNameText)
         updateGroupButton = findViewById(R.id.updateGroupButton)
-
 
         token = savePrefs().get("token", "nullValue")
         groupId = savePrefs()["groupId", -1]
@@ -39,16 +43,16 @@ class UpdateGroup : AppCompatActivity() {
         groupName = savePrefs()["groupName"]
 
         updateGroupNameText.setText(groupName)
-
     }
 
     //POST Function
     fun rawJSON() {
 
-        val updateGroupModel =
-            UpdateGroupModel(groupId!!, userId!!, updateGroupNameText.text.toString())
-
         job = CoroutineScope(Dispatchers.IO).launch {
+
+            val updateGroupModel =
+                UpdateGroupModel(groupId!!, userId!!, updateGroupNameText.text.toString())
+
             // Do the POST request and get response
             val response = RetrofitOperations.instance.updateGroup(
                 "Bearer " + token.toString(),

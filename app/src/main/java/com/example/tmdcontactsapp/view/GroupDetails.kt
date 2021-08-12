@@ -1,5 +1,6 @@
 package com.example.tmdcontactsapp.view
 
+import android.annotation.SuppressLint
 import android.content.Intent
 import android.os.Bundle
 import android.text.Editable
@@ -40,7 +41,6 @@ class GroupDetails : AppCompatActivity() {
 
     private var groupId: Int? = 0
     private var userId: Int? = 0
-    private var contactId: Int? = 0
     private var groupName: String? = null
     private var token: String? = null
 
@@ -51,30 +51,11 @@ class GroupDetails : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_group_details)
-
         setSupportActionBar(toolbarGroupDetails)
-        toolbarGroupDetails.setNavigationOnClickListener {
-            Toast.makeText(applicationContext, "Navigation Menu Clicked", Toast.LENGTH_LONG).show()
-        }
 
-
-        token = savePrefs().get("token", "nullValue")
-        groupId = savePrefs()["groupId", -1]
-        userId = savePrefs()["userId", -1]
-        groupName = savePrefs()["groupName"]
-
-
-        //Definition RecyclerView
-        groupDetailsRecyclerView = findViewById(R.id.groupDetailsRecyclerView)
-        val groupDetailsLayoutManager: RecyclerView.LayoutManager = LinearLayoutManager(this)
-        groupDetailsRecyclerView.layoutManager = groupDetailsLayoutManager
-
+        init()
         loadData()
 
-        updateGroupButton = findViewById(R.id.updateGroupButton)
-        addContactGroupButton = findViewById(R.id.addGroupContactButton)
-
-        searchTextGroupDetails = findViewById(R.id.searchTextGroupDetails)
         searchTextGroupDetails.addTextChangedListener(object : TextWatcher {
             override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {
 //
@@ -88,6 +69,23 @@ class GroupDetails : AppCompatActivity() {
                 filter(s.toString())
             }
         })
+
+    }
+
+    fun init() {
+        token = savePrefs().get("token", "nullValue")
+        groupId = savePrefs()["groupId", -1]
+        userId = savePrefs()["userId", -1]
+        groupName = savePrefs()["groupName"]
+
+        //Definition RecyclerView
+        groupDetailsRecyclerView = findViewById(R.id.groupDetailsRecyclerView)
+        val groupDetailsLayoutManager: RecyclerView.LayoutManager = LinearLayoutManager(this)
+        groupDetailsRecyclerView.layoutManager = groupDetailsLayoutManager
+
+        updateGroupButton = findViewById(R.id.updateGroupButton)
+        addContactGroupButton = findViewById(R.id.addGroupContactButton)
+        searchTextGroupDetails = findViewById(R.id.searchTextGroupDetails)
 
     }
 
@@ -137,22 +135,24 @@ class GroupDetails : AppCompatActivity() {
 
 
     val swipeGesture = object : SwipeGesture() {
+        @SuppressLint("NotifyDataSetChanged")
         override fun onSwiped(viewHolder: RecyclerView.ViewHolder, direction: Int) {
 
             when (direction) {
                 ItemTouchHelper.LEFT -> {
                     //POST Function
 
-                    val deleteGroupContactModel = DeleteGroupContactModel(
-                        groupId!!,
-                        if (filteredList!!.isEmpty()) {
-                            groupDetailsModel!![viewHolder.absoluteAdapterPosition].id
-                        } else {
-                            filteredList!![viewHolder.absoluteAdapterPosition].id
-                        }
-                    )
-
                     job = CoroutineScope(Dispatchers.IO).launch {
+
+                        val deleteGroupContactModel = DeleteGroupContactModel(
+                            groupId!!,
+                            if (filteredList!!.isEmpty()) {
+                                groupDetailsModel!![viewHolder.absoluteAdapterPosition].id
+                            } else {
+                                filteredList!![viewHolder.absoluteAdapterPosition].id
+                            }
+                        )
+
                         // Do the POST request and get response
                         val response =
                             RetrofitOperations.instance.deleteGroupContact(

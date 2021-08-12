@@ -27,9 +27,13 @@ class Forgot_Password : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_forgot_password)
 
+        init()
+
+    }
+
+    fun init(){
         emailForgotText = findViewById(R.id.emailForgotText)
         resetForgotButton = findViewById(R.id.resetForgotButton)
-
     }
 
     //POST Function

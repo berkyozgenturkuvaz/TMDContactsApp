@@ -32,20 +32,26 @@ class ResetPassword : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_reset_password)
 
+        init()
+
+    }
+
+    fun init() {
         emailForPass = savePrefs()["emailForPass", ""]
 
         newPassword = findViewById(R.id.newPasswordText)
         confirmNewPassword = findViewById(R.id.confirmNewPasswordText)
-
     }
 
     //POST Function
     fun rawJSON() {
 
-        password = newPassword.text.toString()
-
-        val resetPasswordModel = ResetPasswordModel(emailForPass.toString(), password.toString())
         job = CoroutineScope(Dispatchers.IO).launch {
+
+            password = newPassword.text.toString()
+            val resetPasswordModel =
+                ResetPasswordModel(emailForPass.toString(), password.toString())
+
             // Do the POST request and get response
             val response =
                 RetrofitOperations.instance.resetPass(resetPasswordModel = resetPasswordModel)
@@ -78,11 +84,12 @@ class ResetPassword : AppCompatActivity() {
     //POST Function
     fun rawJSON2() {
 
-        val loginModel =
-            LoginModel(emailForPass.toString(), password.toString())
-
         job = CoroutineScope(Dispatchers.IO).launch {
             // Do the POST request and get response
+
+            val loginModel =
+                LoginModel(emailForPass.toString(), password.toString())
+
             val response = RetrofitOperations.instance.login(loginModel = loginModel)
 
             withContext(Dispatchers.Main) {

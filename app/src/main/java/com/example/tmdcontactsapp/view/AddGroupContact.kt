@@ -29,7 +29,6 @@ class AddGroupContact : AppCompatActivity() {
     private var job: Job? = null
 
     lateinit var addGroupContactRecyclerView: RecyclerView
-    private val BASE_URL = "http://tmdcontacts-api.dev.tmd"
     private var contactModels: ArrayList<ContactsModel>? = null
     private var filteredList: ArrayList<ContactsModel>? = ArrayList()
     private var recyclerViewAdapter: RecyclerViewAdapter? = null
@@ -40,21 +39,9 @@ class AddGroupContact : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_add_group_contact)
 
-
-        token = savePrefs().get("token", "nullValue")
-        groupId = savePrefs()["groupId", -1]
-        userId = savePrefs()["userId", -1]
-
+        init()
         loadData()
 
-
-        //Definition RecyclerView
-        addGroupContactRecyclerView = findViewById(R.id.addGroupContactRecyclerView)
-        val layoutManager =
-            LinearLayoutManager(applicationContext, LinearLayoutManager.VERTICAL, false)
-        addGroupContactRecyclerView.layoutManager = layoutManager
-
-        searchTextAddGroupContact = findViewById(R.id.searchTextAddGroupContact)
         searchTextAddGroupContact.addTextChangedListener(object : TextWatcher {
             override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {
 //
@@ -68,6 +55,20 @@ class AddGroupContact : AppCompatActivity() {
                 filter(s.toString())
             }
         })
+    }
+
+    fun init() {
+        token = savePrefs().get("token", "nullValue")
+        groupId = savePrefs()["groupId", -1]
+        userId = savePrefs()["userId", -1]
+
+        //Definition RecyclerView
+        addGroupContactRecyclerView = findViewById(R.id.addGroupContactRecyclerView)
+        val layoutManager =
+            LinearLayoutManager(applicationContext, LinearLayoutManager.VERTICAL, false)
+        addGroupContactRecyclerView.layoutManager = layoutManager
+
+        searchTextAddGroupContact = findViewById(R.id.searchTextAddGroupContact)
 
     }
 
@@ -123,56 +124,15 @@ class AddGroupContact : AppCompatActivity() {
 
             }
         }
-
-
-        /*call?.enqueue(object : Callback<List<ContactsModel>> {
-            override fun onResponse(
-                call: Call<List<ContactsModel>>,
-                response: Response<List<ContactsModel>>
-            ) {
-                if (response.isSuccessful) {
-                    response.body()?.let {
-                        contactModels = ArrayList(it)
-                        contactModels?.let { contactsmodel ->
-                            recyclerViewAdapter = RecyclerViewAdapter(contactsmodel)
-                            recyclerViewAdapter?.setType(RecyclerViewAdapter.VIEW_TYPE_ONE)
-                            recyclerViewAdapter?.setListener(object : RecyclerViewAdapter.Listener {
-                                override fun onItemClick(contactsModel: ContactsModel) {
-                                    Toast.makeText(
-                                        applicationContext,
-                                        "${contactsModel.id}",
-                                        Toast.LENGTH_LONG
-                                    ).show()
-
-                                    contactId = contactsModel.id
-                                    rawJSON()
-
-                                }
-
-                            })
-                            addGroupContactRecyclerView.adapter = recyclerViewAdapter
-                        }
-
-                    }
-
-
-                }
-            }
-
-            override fun onFailure(call: Call<List<ContactsModel>>, t: Throwable) {
-                t.printStackTrace()
-            }
-
-        })*/
-
     }
 
     //POST Function
     fun rawJSON() {
 
-        val addGroupContactModel = AddGroupContactModel(groupId!!, contactId!!)
-
         job = CoroutineScope(Dispatchers.IO).launch {
+
+            val addGroupContactModel = AddGroupContactModel(groupId!!, contactId!!)
+
             // Do the POST request and get response
             val response = RetrofitOperations.instance.addGroupContact(
                 "Bearer " + token.toString(),

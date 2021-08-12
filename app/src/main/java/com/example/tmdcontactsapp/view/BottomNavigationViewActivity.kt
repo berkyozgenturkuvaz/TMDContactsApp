@@ -1,11 +1,7 @@
 package com.example.tmdcontactsapp.view
 
-import android.app.Activity
-import android.content.Context
 import android.os.Bundle
 import android.util.Log
-import android.view.View
-import android.view.inputmethod.InputMethodManager
 import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentManager
@@ -43,12 +39,14 @@ class BottomNavigationViewActivity : AppCompatActivity() {
             when (item.itemId) {
                 R.id.contactListFragment -> {
 
-                    replaceFragment(ContactsListFragment.newInstance()
+                    replaceFragment(
+                        ContactsListFragment.newInstance()
                     )
                     return@OnNavigationItemSelectedListener true
                 }
                 R.id.groupsFragment -> {
-                    replaceFragment(GroupsFragment()
+                    replaceFragment(
+                        GroupsFragment()
                     )
                     return@OnNavigationItemSelectedListener true
                 }
@@ -75,26 +73,6 @@ class BottomNavigationViewActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_bottom_navigation_view)
 
-
-//        val intent = intent
-//        id = intent.getIntExtra("id", 0)
-//        name = intent.getStringExtra("Name").toString()
-//        surname = intent.getStringExtra("Surname").toString()
-//        email = intent.getStringExtra("Email").toString()
-//        address = intent.getStringExtra("Address").toString()
-//        birthDate = intent.getStringExtra("BirthDate").toString()
-//        tel = intent.getStringExtra("Tel").toString()
-//        telBusiness = intent.getStringExtra("TelBusiness").toString()
-//        telHome = intent.getStringExtra("TelHome").toString()
-//        company = intent.getStringExtra("Company").toString()
-//        title = intent.getStringExtra("Title").toString()
-//        note = intent.getStringExtra("Note").toString()
-//        userMail = intent.getStringExtra("userMail").toString()
-
-//        val intent = intent
-//        userMail = intent.getStringExtra("userMail").toString()
-
-
         token = savePrefs()["token", "value"]
         userMail = savePrefs()["userMail", "value"]
 
@@ -109,13 +87,6 @@ class BottomNavigationViewActivity : AppCompatActivity() {
         logoutIcon.setOnClickListener {
             Log.e("TOOLBAR", "email")
         }
-
-//        loadData()
-//
-
-//      var gson = Gson()
-//      var jsonString = gson.toJson(userName)
-//      var profileModel  = Gson().fromJson(userName, ProfileModel::class.java)
 
         val bottomNavigationView = findViewById<BottomNavigationView>(R.id.bottomNavigationView)
         val navController = findNavController(R.id.fragment)
@@ -139,72 +110,5 @@ class BottomNavigationViewActivity : AppCompatActivity() {
         fragmentTransaction.add(R.id.fragment, fragment)
         fragmentTransaction.commit()
     }
-
-    /*//Get Profile Data using with email
-    private fun loadData() {
-
-        val retrofit = Retrofit.Builder()
-            .baseUrl(BASE_URL)
-            .addConverterFactory(GsonConverterFactory.create())
-            .build()
-
-        val service = retrofit.create(ContacsAPI::class.java)
-        val call =
-            userMail?.let { service.getProfileData("Bearer " + token.toString(), email = it) }
-
-        call?.enqueue(object : Callback<ProfileModel> {
-            override fun onResponse(
-                call: Call<ProfileModel>,
-                response: Response<ProfileModel>
-            ) {
-                if (response.isSuccessful) {
-                    response.body()?.let {
-                        val profileModels = response.body()
-
-                        // savePrefs()["userName"] = profileModels.toString()
-                        // val stringModel = profileModels.toString()
-                        // Log.e("String Model: ", stringModel)
-
-                        //  var gson = Gson()
-                        //  var jsonString = gson.toJson(stringModel)
-                        //
-                        //  var profilemodel = Gson().fromJson(jsonString, ProfileModel::class.java)
-                        //  Log.e("String Model: ", profilemodel.name)
-
-
-//                        val intent =
-//                            Intent(applicationContext, BottomNavigationViewActivity::class.java)
-//                        intent.putExtra("id", profileModels?.id)
-//                        intent.putExtra("Name", profileModels?.name)
-//                        intent.putExtra("Surname", profileModels?.surname)
-//                        intent.putExtra("Email", profileModels?.email)
-//                        intent.putExtra("Address", profileModels?.address)
-//                        intent.putExtra("BirthDate", profileModels?.birthDate)
-//                        intent.putExtra("Tel", profileModels?.tel)
-//                        intent.putExtra("TelBusiness", profileModels?.telBusiness)
-//                        intent.putExtra("TelHome", profileModels?.telHome)
-//                        intent.putExtra("Company", profileModels?.company)
-//                        intent.putExtra("Title", profileModels?.title)
-//                        intent.putExtra("Note", profileModels?.note)
-//                        intent.putExtra("token", token)
-//                        startActivity(intent)
-
-                    }
-
-
-                } else {
-                    Log.e("RETROFIT_ERROR", response.code().toString())
-                }
-            }
-
-            override fun onFailure(call: Call<ProfileModel>, t: Throwable) {
-                t.printStackTrace()
-            }
-        })
-
-    }*/
-
-
-
 }
 

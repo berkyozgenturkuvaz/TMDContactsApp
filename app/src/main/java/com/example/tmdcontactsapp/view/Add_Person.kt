@@ -46,6 +46,12 @@ class Add_Person : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_add_person)
 
+        init()
+
+
+    }
+
+    fun init(){
         photoAddPerson = findViewById(R.id.photoAddPerson)
         addPersonNameText = findViewById(R.id.addPersonNameText)
         addPersonSurnameText = findViewById(R.id.addPersonSurnameText)
@@ -61,8 +67,6 @@ class Add_Person : AppCompatActivity() {
         addPersonAddButton = findViewById(R.id.addPersonAddButton)
         toolbar = findViewById(R.id.toolbarMenu)
         setSupportActionBar(toolbar)
-
-
     }
 
     override fun onCreateOptionsMenu(menu: Menu?): Boolean {
@@ -136,67 +140,6 @@ class Add_Person : AppCompatActivity() {
         super.onActivityResult(requestCode, resultCode, data)
     }
 
-    //POST Function
-//    fun rawJSON() {
-//
-//        //IMAGE POST
-//        val byteArrayOutputStream = ByteArrayOutputStream()
-//        selectedBitmap?.compress(Bitmap.CompressFormat.PNG, 100, byteArrayOutputStream)
-//        val byteArray: ByteArray = byteArrayOutputStream.toByteArray()
-//
-//        val encoded: String = Base64.encodeToString(byteArray, Base64.DEFAULT)
-//        imageDataString = encoded
-//        Log.d("Image :", encoded)
-//
-//        // Create Retrofit
-//        val retrofit = Retrofit.Builder()
-//            .addConverterFactory(GsonConverterFactory.create())
-//            .baseUrl("http://tmdcontacts-api.dev.tmd/api/Contacts/Add/")
-//            .build()
-//
-//        // Create Service
-//        val service = retrofit.create(ContacsAPI::class.java)
-//
-//        val addContactModel = AddContactModel(
-//            addPersonNameText.text.toString(),
-//            addPersonSurnameText.text.toString(),
-//            addPersonEmailText.text.toString(),
-//            addPersonAddressText.text.toString(),
-//            addPersonBirthdayText.text.toString(),
-//            imageDataString,
-//            addPersonCellphoneText.text.toString(),
-//            addPersonWorkphoneText.text.toString(),
-//            addPersonHomephoneText.text.toString(),
-//            addPersonCompanyText.text.toString(),
-//            addPersonTitleText.text.toString(),
-//            addPersonNoteText.text.toString(),
-//            userId
-//        )
-//        CoroutineScope(Dispatchers.IO).launch {
-//            // Do the POST request and get response
-//            val response = service.addContact(addContactModel = addContactModel)
-//
-//            withContext(Dispatchers.Main) {
-//                if (response.isSuccessful) {
-//
-//                    val gson = GsonBuilder().setPrettyPrinting().create()
-//                    val prettyJson = gson.toJson(
-//                        JsonParser.parseString(
-//                            response.body()
-//                                ?.string()
-//                        )
-//                    )
-//
-//                    Log.d("Pretty Printed JSON :", prettyJson)
-//                    Log.d("Image :", encoded)
-//
-//                } else {
-//
-//                    Log.e("RETROFIT_ERROR", response.code().toString())
-//                }
-//            }
-//        }
-//    }
 
     //Check nullable variables from ADD Button
     fun addPersonButton(view: View) {

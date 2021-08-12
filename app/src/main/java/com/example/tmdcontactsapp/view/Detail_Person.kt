@@ -32,7 +32,6 @@ class Detail_Person : AppCompatActivity() {
     lateinit var detailPersonCompanyText: TextView
     lateinit var detailPersonTitleText: TextView
     lateinit var detailPersonNoteText: TextView
-    lateinit var detailPersonGroupText: TextView
 
     private var photo: String? = ""
     private var token: String? = null
@@ -48,12 +47,6 @@ class Detail_Person : AppCompatActivity() {
         setContentView(R.layout.activity_detail_person)
 
         init()
-
-        token = savePrefs().get("token", "nullValue")
-        id = savePrefs()["contactsId", -1]
-        userId = savePrefs()["userId", -1]
-
-
         loadDataContact()
 
     }
@@ -71,9 +64,12 @@ class Detail_Person : AppCompatActivity() {
         detailPersonCompanyText = findViewById(R.id.detailPersonCompanyText)
         detailPersonTitleText = findViewById(R.id.detailPersonTitleText)
         detailPersonNoteText = findViewById(R.id.detailPersonNoteText)
-//        detailPersonGroupText = findViewById(R.id.detailPersonGroupText)
         toolbar = findViewById(R.id.toolbarDetailPerson)
         setSupportActionBar(toolbar)
+
+        token = savePrefs().get("token", "nullValue")
+        id = savePrefs()["contactsId", -1]
+        userId = savePrefs()["userId", -1]
 
     }
 

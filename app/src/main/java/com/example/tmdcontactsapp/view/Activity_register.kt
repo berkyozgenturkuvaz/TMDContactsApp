@@ -28,7 +28,7 @@ import java.io.ByteArrayOutputStream
 
 class activity_register : AppCompatActivity() {
 
-    private var job : Job? = null
+    private var job: Job? = null
     var selectedPicture: Uri? = null
     var selectedBitmap: Bitmap? = null
     lateinit var imageDataString: String
@@ -76,7 +76,6 @@ class activity_register : AppCompatActivity() {
         titleTextRegister = findViewById(R.id.titleTextRegister)
         noteTextRegister = findViewById(R.id.noteTextRegister)
         registerButton = findViewById(R.id.registerButton)
-
 
         topTextRegister.setOnClickListener() {
             val intentLogin = Intent(this, MainActivity::class.java)
@@ -156,33 +155,34 @@ class activity_register : AppCompatActivity() {
     //POST Function
     fun rawJSON() {
 
-        //IMAGE POST
-        val byteArrayOutputStream = ByteArrayOutputStream()
-        selectedBitmap?.compress(Bitmap.CompressFormat.PNG, 90, byteArrayOutputStream)
-        val byteArray: ByteArray = byteArrayOutputStream.toByteArray()
-
-        val encoded: String = Base64.encodeToString(byteArray, Base64.DEFAULT)
-        imageDataString = encoded
-        Log.d("Image :", encoded)
-
-        val registerModel = RegisterModel(
-            nameTextRegister.text.toString(),
-            surnameTextRegister.text.toString(),
-            emailTextRegister.text.toString(),
-            passwordTextRegister.text.toString(),
-            addressTextRegister.text.toString(),
-            birthdayTextRegister.text.toString(),
-            imageDataString,
-            cellPhoneTextRegister.text.toString(),
-            workPhoneTextRegister.text.toString(),
-            homePhoneTextRegister.text.toString(),
-            companyTextRegister.text.toString(),
-            titleTextRegister.text.toString(),
-            noteTextRegister.text.toString(),
-            Status
-        )
-
         job = CoroutineScope(Dispatchers.IO).launch {
+
+            //IMAGE POST
+            val byteArrayOutputStream = ByteArrayOutputStream()
+            selectedBitmap?.compress(Bitmap.CompressFormat.PNG, 90, byteArrayOutputStream)
+            val byteArray: ByteArray = byteArrayOutputStream.toByteArray()
+
+            val encoded: String = Base64.encodeToString(byteArray, Base64.DEFAULT)
+            imageDataString = encoded
+            Log.d("Image :", encoded)
+
+            val registerModel = RegisterModel(
+                nameTextRegister.text.toString(),
+                surnameTextRegister.text.toString(),
+                emailTextRegister.text.toString(),
+                passwordTextRegister.text.toString(),
+                addressTextRegister.text.toString(),
+                birthdayTextRegister.text.toString(),
+                imageDataString,
+                cellPhoneTextRegister.text.toString(),
+                workPhoneTextRegister.text.toString(),
+                homePhoneTextRegister.text.toString(),
+                companyTextRegister.text.toString(),
+                titleTextRegister.text.toString(),
+                noteTextRegister.text.toString(),
+                Status
+            )
+
             // Do the POST request and get response
             val response = RetrofitOperations.instance.createUser(registerModel = registerModel)
 

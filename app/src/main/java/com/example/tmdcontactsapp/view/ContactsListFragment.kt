@@ -1,5 +1,6 @@
 package com.example.tmdcontactsapp.view
 
+import android.annotation.SuppressLint
 import android.content.Intent
 import android.graphics.BitmapFactory
 import android.os.Bundle
@@ -116,7 +117,6 @@ class ContactsListFragment : Fragment() {
             }
         })
 
-
         return view
     }
 
@@ -181,6 +181,7 @@ class ContactsListFragment : Fragment() {
 
     //Delete Item From RecList
     val swipeGesture = object : SwipeGesture() {
+        @SuppressLint("NotifyDataSetChanged")
         override fun onSwiped(viewHolder: RecyclerView.ViewHolder, direction: Int) {
 
             when (direction) {
@@ -289,56 +290,8 @@ class ContactsListFragment : Fragment() {
                     }
                 }
 
-
             }
         }
-
-        /*userId?.let {
-            RetrofitOperations.instance.getData(
-                "Bearer " + token.toString(),
-                userId = it
-            )
-        }
-            ?.enqueue(object : Callback<List<ContactsModel>> {
-                override fun onResponse(
-                    call: Call<List<ContactsModel>>,
-                    response: Response<List<ContactsModel>>
-                ) {
-                    if (response.isSuccessful) {
-                        response.body()?.let {
-                            contactModels = ArrayList(it)
-                            contactModels?.let { contactsmodel ->
-                                recyclerViewAdapter = RecyclerViewAdapter(contactsmodel)
-                                recyclerViewAdapter?.setType(RecyclerViewAdapter.VIEW_TYPE_ONE)
-                                recyclerViewAdapter?.setListener(object :
-                                    RecyclerViewAdapter.Listener {
-                                    override fun onItemClick(contactsModel: ContactsModel) {
-                                        Toast.makeText(
-                                            context,
-                                            "${contactsModel.name}",
-                                            Toast.LENGTH_LONG
-                                        ).show()
-
-                                        context?.savePrefs()?.set("contactsId", contactsModel.id)
-
-                                        val intent = Intent(context, Detail_Person::class.java)
-                                        startActivity(intent)
-                                    }
-
-                                })
-                                val touchHelper = ItemTouchHelper(swipeGesture)
-                                touchHelper.attachToRecyclerView(homeRecyclerView)
-                                homeRecyclerView.adapter = recyclerViewAdapter
-                            }
-                        }
-                    }
-                }
-
-                override fun onFailure(call: Call<List<ContactsModel>>, t: Throwable) {
-                    t.printStackTrace()
-                    t.message
-                }
-            })*/
     }
 
     override fun onDestroy() {

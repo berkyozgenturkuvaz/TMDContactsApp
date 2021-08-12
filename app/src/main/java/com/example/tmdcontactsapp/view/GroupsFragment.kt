@@ -74,23 +74,19 @@ class GroupsFragment : Fragment() {
         val groupsToolbar = view.findViewById<Toolbar>(R.id.toolbarMenu)
         (requireActivity() as AppCompatActivity).setSupportActionBar(groupsToolbar)
 
+        token = context?.savePrefs()?.get("token", "value")
+        userId = context?.savePrefs()?.get("userId", -1)
+
         //Definition RecyclerView
         groupsRecyclerView = view.findViewById(R.id.groupsRecyclerView)
         val groupsLayoutManager = LinearLayoutManager(context, LinearLayoutManager.VERTICAL, false)
         groupsRecyclerView.layoutManager = groupsLayoutManager
 
-        //Initiliaze variable
+        //Initiliaze Variable
         addGroupButton = view.findViewById(R.id.addGroupButton)
         addGroupButton.setOnClickListener {
             addGroupButton()
         }
-
-        token = context?.savePrefs()?.get("token", "value")
-        userId = context?.savePrefs()?.get("userId", -1)
-
-        loadData()
-
-
 
         searchTextGroup = view.findViewById(R.id.searchTextGroup)
         searchTextGroup.addTextChangedListener(object : TextWatcher {
@@ -107,10 +103,12 @@ class GroupsFragment : Fragment() {
             }
         })
 
+        loadData()
+
         return view
     }
 
-    //item.surname.lowercase().contains(text.lowercase())
+
     fun filter(text: String) {
         filteredList!!.clear()
         for (item: GroupsModel in groupsContactModels!!) {
@@ -124,27 +122,6 @@ class GroupsFragment : Fragment() {
     override fun onActivityCreated(savedInstanceState: Bundle?) {
         super.onActivityCreated(savedInstanceState)
     }
-
-/*    override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
-        inflater.inflate(R.menu.main_menu, menu)
-        super.onCreateOptionsMenu(menu, inflater)
-    }
-
-    override fun onOptionsItemSelected(item: MenuItem): Boolean {
-        when (item.itemId) {
-            R.id.deleteButton -> {
-                Toast.makeText(requireActivity(), "Delete", Toast.LENGTH_LONG).show()
-            }
-            R.id.addButton -> {
-                Toast.makeText(requireActivity(), "Add", Toast.LENGTH_LONG).show()
-                val intent2 = Intent(context, AddGroup::class.java)
-                intent2.putExtra("userId", userId)
-                intent2.putExtra("token", token)
-                startActivity(intent2)
-            }
-        }
-        return super.onOptionsItemSelected(item)
-    }*/
 
     val swipeGesture = object : SwipeGesture() {
         @SuppressLint("NotifyDataSetChanged")
@@ -209,10 +186,8 @@ class GroupsFragment : Fragment() {
                             }
                         }
                     }
-
                 }
             }
-
             super.onSwiped(viewHolder, direction)
         }
     }

@@ -114,7 +114,6 @@ class ProfileFragment : Fragment() {
         profileCompanyText = view.findViewById(R.id.profileCompanyText)
         profileTitleText = view.findViewById(R.id.profileTitleText)
         profileNoteText = view.findViewById(R.id.profileNoteText)
-//        profileLogoutButtonText = view.findViewById(R.id.profileLogoutButtonText)
         updateProfile = view.findViewById(R.id.exampleButton)
 
         val toolbar = view.findViewById<androidx.appcompat.widget.Toolbar>(R.id.toolbarMenu)
@@ -123,16 +122,15 @@ class ProfileFragment : Fragment() {
         token = context?.savePrefs()?.get("token", "value")
         userMail = context?.savePrefs()?.get("userMail", "value")
 
-
-
-        loadData()
-
         updateProfile.setOnClickListener {
             updateProfile()
         }
 
+        loadData()
+
         return view
     }
+
 
     @SuppressLint("SetTextI18n")
     override fun onActivityCreated(savedInstanceState: Bundle?) {
@@ -155,8 +153,6 @@ class ProfileFragment : Fragment() {
 
     override fun onStart() {
         super.onStart()
-
-
     }
 
     //Get Profile Data using with email
@@ -203,53 +199,7 @@ class ProfileFragment : Fragment() {
                     Log.e("RETROFIT_ERROR", response.code().toString())
                 }
             }
-
         }
-
-
-        /*call?.enqueue(object : Callback<ProfileModel> {
-            @SuppressLint("SetTextI18n")
-            override fun onResponse(
-                call: Call<ProfileModel>,
-                response: Response<ProfileModel>
-            ) {
-                if (response.isSuccessful) {
-                    response.body()?.let {
-                        val profileModels = response.body()
-                        profileNameText.text = "Name: " + profileModels?.name.toString()
-                        profileSurnameText.text = "Surname: " + profileModels?.surname.toString()
-                        profileEmailText.text = "Email: " + profileModels?.email.toString()
-                        profileAddressText.text = "Address: " + profileModels?.address.toString()
-                        profileBirthdayText.text = "Birthdate: " + profileModels?.birthDate.toString()
-                        profileCellphoneText.text = "Tel: " + profileModels?.tel.toString()
-                        profileWorkphoneText.text = "Work Tel: " + profileModels?.telBusiness.toString()
-                        profileHomephoneText.text = "Home Tel: " + profileModels?.telHome.toString()
-                        profileCompanyText.text = "Company: " + profileModels?.company.toString()
-                        profileTitleText.text = "Title: " + profileModels?.title.toString()
-                        profileNoteText.text = "Note: " + profileModels?.note.toString()
-                        photo = profileModels?.photo
-
-                        val imageBytes = Base64.decode(photo, 0)
-                        val decodedImage =
-                            BitmapFactory.decodeByteArray(imageBytes, 0, imageBytes.size)
-                        profileImageView.setImageBitmap(decodedImage)
-
-                        context!!.savePrefs()["userProfile"] = Gson().toJson(profileModels)
-                        onStart()
-
-
-                    }
-                } else {
-                    Log.e("RETROFIT_ERROR", response.code().toString())
-                }
-
-            }
-
-            override fun onFailure(call: Call<ProfileModel>, t: Throwable) {
-                t.printStackTrace()
-            }
-        })*/
-
     }
 
 

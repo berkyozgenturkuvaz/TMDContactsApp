@@ -24,12 +24,16 @@ class VerificationCode : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_verification_code)
 
+       init()
+
+    }
+
+    fun init(){
         verificationCodeText = findViewById(R.id.verificationCodeText)
         verificationButton = findViewById(R.id.verifyCodeButton)
 
         verificationCode = savePrefs()["verificationCode", ""]
         emailForPass = savePrefs()["emailForPass", ""]
-
     }
 
     fun verifyCodeButton(view: View) {

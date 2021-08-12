@@ -27,21 +27,27 @@ class ChangePassword : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_change_password)
 
+       init()
+
+    }
+
+    fun init(){
         currentPassword = findViewById(R.id.currentPasswordText)
         newPassword = findViewById(R.id.newPasswordText)
         confirmPassword = findViewById(R.id.confirmPasswordText)
 
         token = savePrefs().get("token", "value")
         email = savePrefs().get("userMail", "value")
-
     }
 
     //POST Function
     fun rawJSON() {
 
-        val changePasswordModel = ChangePasswordModel(email.toString(), newPassword.text.toString())
-
         job = CoroutineScope(Dispatchers.IO).launch {
+
+            val changePasswordModel =
+                ChangePasswordModel(email.toString(), newPassword.text.toString())
+
             // Do the POST request and get response
             val response = RetrofitOperations.instance.changePass(
                 "Bearer " + token.toString(),

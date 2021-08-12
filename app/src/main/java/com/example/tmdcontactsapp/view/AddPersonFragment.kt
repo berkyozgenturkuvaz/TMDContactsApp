@@ -79,6 +79,8 @@ class AddPersonFragment : Fragment() {
     ): View? {
         // Inflate the layout for this fragment
         val view: View = inflater.inflate(R.layout.activity_add_person, container, false)
+        val toolbar = view?.findViewById<androidx.appcompat.widget.Toolbar>(R.id.toolbarMenu)
+        (requireActivity() as AppCompatActivity).setSupportActionBar(toolbar)
 
         photoAddPerson = view.findViewById(R.id.photoAddPerson)
         addPersonNameText = view.findViewById(R.id.addPersonNameText)
@@ -96,11 +98,6 @@ class AddPersonFragment : Fragment() {
 
         token = context?.savePrefs()?.get("token", "nullValue")
         userId = context?.savePrefs()?.get("userId", -1)
-
-
-        val toolbar = view.findViewById<androidx.appcompat.widget.Toolbar>(R.id.toolbarMenu)
-        (requireActivity() as AppCompatActivity).setSupportActionBar(toolbar)
-
 
         //Check nullable variables from ADD Button
         addPersonAddButton.setOnClickListener(object : View.OnClickListener {
@@ -135,7 +132,6 @@ class AddPersonFragment : Fragment() {
             }
         })
 
-
         //Choose a photo Button
         photoAddPerson.setOnClickListener(object : View.OnClickListener {
             override fun onClick(v: View?) {
@@ -158,37 +154,14 @@ class AddPersonFragment : Fragment() {
             }
         })
 
-
         return view
-
     }
-
 
     override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
         inflater.inflate(R.menu.main_title, menu)
         super.onCreateOptionsMenu(menu, inflater)
     }
 
-    //Update Image Button Onclick Function
-    fun choosePhotoAddPerson(view: View) {
-        if (context?.let {
-                ContextCompat.checkSelfPermission(
-                    it,
-                    android.Manifest.permission.READ_EXTERNAL_STORAGE
-                )
-            } != PackageManager.PERMISSION_GRANTED
-        ) {
-            ActivityCompat.requestPermissions(
-                context as Activity,
-                arrayOf(android.Manifest.permission.READ_EXTERNAL_STORAGE),
-                1
-            )
-        } else {
-            val intentToGallery =
-                Intent(Intent.ACTION_PICK, MediaStore.Images.Media.EXTERNAL_CONTENT_URI)
-            startActivityForResult(intentToGallery, 2)
-        }
-    }
 
     override fun onRequestPermissionsResult(
         requestCode: Int,
@@ -247,30 +220,32 @@ class AddPersonFragment : Fragment() {
     //POST Function
     fun rawJSON() {
 
-        //IMAGE POST
-        val byteArrayOutputStream = ByteArrayOutputStream()
-        selectedBitmap?.compress(Bitmap.CompressFormat.PNG, 100, byteArrayOutputStream)
-        val byteArray: ByteArray = byteArrayOutputStream.toByteArray()
-
-        val encoded: String = Base64.encodeToString(byteArray, Base64.DEFAULT)
-        imageDataString = encoded
-
-        val addContactModel = AddContactModel(
-            addPersonNameText.text.toString(),
-            addPersonSurnameText.text.toString(),
-            addPersonEmailText.text.toString(),
-            addPersonAddressText.text.toString(),
-            addPersonBirthdayText.text.toString(),
-            imageDataString,
-            addPersonCellphoneText.text.toString(),
-            addPersonWorkphoneText.text.toString(),
-            addPersonHomephoneText.text.toString(),
-            addPersonCompanyText.text.toString(),
-            addPersonTitleText.text.toString(),
-            addPersonNoteText.text.toString(),
-            userId!!
-        )
         job = CoroutineScope(Dispatchers.IO).launch {
+
+            //IMAGE POST
+            val byteArrayOutputStream = ByteArrayOutputStream()
+            selectedBitmap?.compress(Bitmap.CompressFormat.PNG, 100, byteArrayOutputStream)
+            val byteArray: ByteArray = byteArrayOutputStream.toByteArray()
+
+            val encoded: String = Base64.encodeToString(byteArray, Base64.DEFAULT)
+            imageDataString = encoded
+
+            val addContactModel = AddContactModel(
+                addPersonNameText.text.toString(),
+                addPersonSurnameText.text.toString(),
+                addPersonEmailText.text.toString(),
+                addPersonAddressText.text.toString(),
+                addPersonBirthdayText.text.toString(),
+                imageDataString,
+                addPersonCellphoneText.text.toString(),
+                addPersonWorkphoneText.text.toString(),
+                addPersonHomephoneText.text.toString(),
+                addPersonCompanyText.text.toString(),
+                addPersonTitleText.text.toString(),
+                addPersonNoteText.text.toString(),
+                userId!!
+            )
+
             // Do the POST request and get response
             val response =
                 RetrofitOperations.instance.addContact(
@@ -299,6 +274,11 @@ class AddPersonFragment : Fragment() {
                 }
             }
         }
+    }
+
+    override fun onDestroy() {
+        super.onDestroy()
+        job?.cancel()
     }
 
 }

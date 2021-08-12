@@ -67,12 +67,29 @@ class Update_Profile : AppCompatActivity() {
 
         init()
 
+    }
+
+    fun init() {
+        photoUpdateProfile = findViewById(R.id.photoUpdateProfile)
+        updateProfileNameText = findViewById(R.id.updateProfileNameText)
+        updateProfileSurnameText = findViewById(R.id.updateProfileSurnameText)
+        updateProfileEmailText = findViewById(R.id.updateProfileEmailText)
+        updateProfileAddressText = findViewById(R.id.updateProfileAddressText)
+        updateProfileBirthdayText = findViewById(R.id.updateProfileBirthdayText)
+        updateProfileCellphoneText = findViewById(R.id.updateProfileCellphoneText)
+        updateProfileWorkphoneText = findViewById(R.id.updateProfileWorkphoneText)
+        updateProfileHomephoneText = findViewById(R.id.updateProfileHomephoneText)
+        updateProfileCompanyText = findViewById(R.id.updateProfileCompanyText)
+        updateProfileTitleText = findViewById(R.id.updateProfileTitleText)
+        updateProfileNoteText = findViewById(R.id.updateProfileNoteText)
+        updateProfileUpdateButton = findViewById(R.id.updateProfileButton)
+
         token = savePrefs().get("token", "nullValue")
         userId = savePrefs()["userId", -1]
 
         profilemodel = savePrefs()["userProfile", ""]
         val profilemodel: ProfileModel = Gson().fromJson(profilemodel, ProfileModel::class.java)
-        Log.e("String Model: ", profilemodel.name.toString())
+        /*Log.e("String Model: ", profilemodel.name.toString())*/
 
         updateProfileNameText.setText(profilemodel.name)
         updateProfileSurnameText.setText(profilemodel.surname)
@@ -90,23 +107,6 @@ class Update_Profile : AppCompatActivity() {
         val imageBytes = Base64.decode(photo, Base64.DEFAULT)
         val decodedImage = BitmapFactory.decodeByteArray(imageBytes, 0, imageBytes.size)
         photoUpdateProfile.setImageBitmap(decodedImage)
-
-    }
-
-    fun init() {
-        photoUpdateProfile = findViewById(R.id.photoUpdateProfile)
-        updateProfileNameText = findViewById(R.id.updateProfileNameText)
-        updateProfileSurnameText = findViewById(R.id.updateProfileSurnameText)
-        updateProfileEmailText = findViewById(R.id.updateProfileEmailText)
-        updateProfileAddressText = findViewById(R.id.updateProfileAddressText)
-        updateProfileBirthdayText = findViewById(R.id.updateProfileBirthdayText)
-        updateProfileCellphoneText = findViewById(R.id.updateProfileCellphoneText)
-        updateProfileWorkphoneText = findViewById(R.id.updateProfileWorkphoneText)
-        updateProfileHomephoneText = findViewById(R.id.updateProfileHomephoneText)
-        updateProfileCompanyText = findViewById(R.id.updateProfileCompanyText)
-        updateProfileTitleText = findViewById(R.id.updateProfileTitleText)
-        updateProfileNoteText = findViewById(R.id.updateProfileNoteText)
-        updateProfileUpdateButton = findViewById(R.id.updateProfileButton)
 
     }
 
@@ -182,33 +182,34 @@ class Update_Profile : AppCompatActivity() {
     //POST Function
     fun rawJSON() {
 
-        //IMAGE POST
-        val byteArrayOutputStream = ByteArrayOutputStream()
-        selectedBitmap?.compress(Bitmap.CompressFormat.JPEG, 100, byteArrayOutputStream)
-        val byteArray: ByteArray = byteArrayOutputStream.toByteArray()
-
-        val encoded: String = Base64.encodeToString(byteArray, Base64.DEFAULT)
-        imageDataString = encoded
-        Log.d("Image :", encoded)
-
-        val updateProfileModel = UpdateProfileModel(
-            userId!!,
-            updateProfileNameText.text.toString(),
-            updateProfileSurnameText.text.toString(),
-            updateProfileEmailText.text.toString(),
-            updateProfileAddressText.text.toString(),
-            updateProfileBirthdayText.text.toString(),
-            imageDataString!!,
-            updateProfileCellphoneText.text.toString(),
-            updateProfileWorkphoneText.text.toString(),
-            updateProfileHomephoneText.text.toString(),
-            updateProfileCompanyText.text.toString(),
-            updateProfileTitleText.text.toString(),
-            updateProfileNoteText.text.toString(),
-            Status
-        )
-
         job = CoroutineScope(Dispatchers.IO).launch {
+
+            //IMAGE POST
+            val byteArrayOutputStream = ByteArrayOutputStream()
+            selectedBitmap?.compress(Bitmap.CompressFormat.JPEG, 100, byteArrayOutputStream)
+            val byteArray: ByteArray = byteArrayOutputStream.toByteArray()
+
+            val encoded: String = Base64.encodeToString(byteArray, Base64.DEFAULT)
+            imageDataString = encoded
+            Log.d("Image :", encoded)
+
+            val updateProfileModel = UpdateProfileModel(
+                userId!!,
+                updateProfileNameText.text.toString(),
+                updateProfileSurnameText.text.toString(),
+                updateProfileEmailText.text.toString(),
+                updateProfileAddressText.text.toString(),
+                updateProfileBirthdayText.text.toString(),
+                imageDataString!!,
+                updateProfileCellphoneText.text.toString(),
+                updateProfileWorkphoneText.text.toString(),
+                updateProfileHomephoneText.text.toString(),
+                updateProfileCompanyText.text.toString(),
+                updateProfileTitleText.text.toString(),
+                updateProfileNoteText.text.toString(),
+                Status
+            )
+
             // Do the POST request and get response
             val response = RetrofitOperations.instance.updateProfile(
                 "Bearer " + token.toString(),
@@ -242,63 +243,9 @@ class Update_Profile : AppCompatActivity() {
 
     //check nullable variables from Update Button
     fun updateProfileButton(view: View) {
-//        if( updateProfileNameText.text.isEmpty().apply{}){
-//            Toast.makeText(
-//                applicationContext,
-//                "Name field can not be empty!",
-//                Toast.LENGTH_LONG
-//            ).show()
-//        }
-//        else if( updateProfileSurnameText.text.isEmpty().apply{}){
-//            Toast.makeText(
-//                applicationContext,
-//                "Surname field can not be empty!",
-//                Toast.LENGTH_LONG
-//            ).show()
-//        }
-//        else if( updateProfileEmailText.text.isEmpty().apply{}){
-//            Toast.makeText(
-//                applicationContext,
-//                "Email field can not be empty!",
-//                Toast.LENGTH_LONG
-//            ).show()
-//        }
-//        else if( updateProfilePasswordText.text.isEmpty().apply{}){
-//            Toast.makeText(
-//                applicationContext,
-//                "Password field can not be empty!",
-//                Toast.LENGTH_LONG
-//            ).show()
-//        }
-//        else if( updateProfileConfirmPasswordText.text.isEmpty().apply{}){
-//            Toast.makeText(
-//                applicationContext,
-//                "Password again field can not be empty!",
-//                Toast.LENGTH_LONG
-//            ).show()
-//        }
-//        else if( updateProfileCellphoneText.text.isEmpty().apply{}){
-//            Toast.makeText(
-//                applicationContext,
-//                "Cell phone number field can not be empty!",
-//                Toast.LENGTH_LONG
-//            ).show()
-//        }
-//        else if( updateProfilePasswordText.text.toString() != updateProfileConfirmPasswordText.text.toString() ){
-//            Toast.makeText(
-//                applicationContext,
-//                "Passwords must be same!",
-//                Toast.LENGTH_LONG
-//            ).show()
-//        }
-//        else{
-//            val intentHome = Intent(this, Profile::class.java)
-//            startActivity(intentHome)
-//        }
         rawJSON()
         val intentHome = Intent(applicationContext, BottomNavigationViewActivity::class.java)
         startActivity(intentHome)
-
     }
 
     fun changePasswordButton(view: View) {
