@@ -48,7 +48,7 @@ class activity_register : AppCompatActivity() {
     lateinit var titleTextRegister: EditText
     lateinit var noteTextRegister: EditText
     lateinit var registerButton: Button
-    var Status: Boolean = true
+    var status: Boolean = true
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -179,7 +179,7 @@ class activity_register : AppCompatActivity() {
                 companyTextRegister.text.toString(),
                 titleTextRegister.text.toString(),
                 noteTextRegister.text.toString(),
-                Status
+                status
             )
 
             // Do the POST request and get response
