@@ -31,22 +31,7 @@ interface ContacsAPI {
         @Header("accept") acceptString: String = "*/*",
         @Query(value = "email", encoded = true) email: String
     ): Response<ProfileModel>
-
-    //Get User Image by Email in Home&Profile For ContactsList&Profile Fragment
-    @GET("/api/Users/GetByEmail")
-    fun getUserImage(
-        @Header("Authorization") Bearer : String,
-        @Header("accept") acceptString: String = "*/*",
-        @Query(value = "email", encoded = true) email: String
-    ): retrofit2.Call<UserImageModel>
-
-    //Get Contact Image by UserId for DetailPerson
-    @GET("/api/Contacts/Get")
-    fun getContactImage(
-        @Header("Authorization") Bearer : String,
-        @Header("accept") acceptString: String = "*/*",
-        @Query(value = "id", encoded = true) contactId: Int
-    ): retrofit2.Call<UserImageModel>
+    
 
     //Get Group List for GroupsFragment
     @GET("/api/Groups/GetListByUserId")

@@ -55,7 +55,6 @@ class activity_register : AppCompatActivity() {
         setContentView(activity_register)
 
         init()
-
     }
 
     //Initialize function
