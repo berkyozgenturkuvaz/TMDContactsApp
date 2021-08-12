@@ -10,17 +10,12 @@ import com.example.tmdcontactsapp.R
 import com.example.tmdcontactsapp.`class`.Preferences.get
 import com.example.tmdcontactsapp.`class`.Preferences.savePrefs
 import com.example.tmdcontactsapp.`class`.Preferences.set
+import com.example.tmdcontactsapp.`class`.RetrofitOperations
 import com.example.tmdcontactsapp.model.LoginModel
 import com.example.tmdcontactsapp.model.ResetPasswordModel
-import com.example.tmdcontactsapp.service.ContacsAPI
 import com.google.gson.GsonBuilder
 import com.google.gson.JsonParser
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
-import retrofit2.Retrofit
-import retrofit2.converter.gson.GsonConverterFactory
+import kotlinx.coroutines.*
 
 class ResetPassword : AppCompatActivity() {
 
@@ -30,6 +25,7 @@ class ResetPassword : AppCompatActivity() {
     lateinit var confirmNewPassword: EditText
     private var token: String? = null
     private var expiration: String? = null
+    private var job: Job? = null
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -46,30 +42,23 @@ class ResetPassword : AppCompatActivity() {
     //POST Function
     fun rawJSON() {
 
-        // Create Retrofit
-        val retrofit = Retrofit.Builder()
-            .addConverterFactory(GsonConverterFactory.create())
-            .baseUrl("http://tmdcontacts-api.dev.tmd")
-            .build()
-
-        // Create Service
-        val service = retrofit.create(ContacsAPI::class.java)
-
         password = newPassword.text.toString()
-        val resetPasswordModel = ResetPasswordModel(emailForPass.toString(),password.toString())
-        CoroutineScope(Dispatchers.IO).launch {
+
+        val resetPasswordModel = ResetPasswordModel(emailForPass.toString(), password.toString())
+        job = CoroutineScope(Dispatchers.IO).launch {
             // Do the POST request and get response
-            val response = service.resetPass(resetPasswordModel = resetPasswordModel)
+            val response =
+                RetrofitOperations.instance.resetPass(resetPasswordModel = resetPasswordModel)
 
             withContext(Dispatchers.Main) {
                 if (response.isSuccessful) {
 
                     val gson = GsonBuilder().setPrettyPrinting().create()
                     val prettyJson = gson.toJson(
-              //          JsonParser.parseString(
-                            response.body()
-                                ?.string()
-                 //       )
+                        //          JsonParser.parseString(
+                        response.body()
+                            ?.string()
+                        //       )
                     )
 
 
@@ -89,20 +78,12 @@ class ResetPassword : AppCompatActivity() {
     //POST Function
     fun rawJSON2() {
 
-        // Create Retrofit
-        val retrofit = Retrofit.Builder()
-            .addConverterFactory(GsonConverterFactory.create())
-            .baseUrl("http://tmdcontacts-api.dev.tmd")
-            .build()
-
-        // Create Service
-        val service = retrofit.create(ContacsAPI::class.java)
-
         val loginModel =
             LoginModel(emailForPass.toString(), password.toString())
-        CoroutineScope(Dispatchers.IO).launch {
+
+        job = CoroutineScope(Dispatchers.IO).launch {
             // Do the POST request and get response
-            val response = service.login(loginModel = loginModel)
+            val response = RetrofitOperations.instance.login(loginModel = loginModel)
 
             withContext(Dispatchers.Main) {
                 if (response.isSuccessful) {
@@ -129,7 +110,8 @@ class ResetPassword : AppCompatActivity() {
                     savePrefs()["token"] = token
                     savePrefs()["userMail"] = emailForPass.toString()
 
-                    val intent = Intent(applicationContext, BottomNavigationViewActivity::class.java)
+                    val intent =
+                        Intent(applicationContext, BottomNavigationViewActivity::class.java)
                     startActivity(intent)
 
                 } else {
@@ -145,5 +127,10 @@ class ResetPassword : AppCompatActivity() {
             rawJSON()
 
         }
+    }
+
+    override fun onDestroy() {
+        super.onDestroy()
+        job?.cancel()
     }
 }

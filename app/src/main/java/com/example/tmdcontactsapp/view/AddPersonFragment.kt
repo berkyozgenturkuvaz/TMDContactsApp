@@ -20,15 +20,10 @@ import androidx.fragment.app.Fragment
 import com.example.tmdcontactsapp.R
 import com.example.tmdcontactsapp.`class`.Preferences.get
 import com.example.tmdcontactsapp.`class`.Preferences.savePrefs
+import com.example.tmdcontactsapp.`class`.RetrofitOperations
 import com.example.tmdcontactsapp.model.AddContactModel
-import com.example.tmdcontactsapp.service.ContacsAPI
 import com.google.gson.GsonBuilder
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
-import retrofit2.Retrofit
-import retrofit2.converter.gson.GsonConverterFactory
+import kotlinx.coroutines.*
 import java.io.ByteArrayOutputStream
 
 private const val ARG_PARAM1 = "param1"
@@ -37,6 +32,8 @@ private const val ARG_PARAM2 = "param2"
 
 class AddPersonFragment : Fragment() {
 
+
+    private var job: Job? = null
     var selectedPicture: Uri? = null
     var selectedBitmap: Bitmap? = null
     lateinit var imageDataString: String
@@ -97,7 +94,7 @@ class AddPersonFragment : Fragment() {
         addPersonNoteText = view.findViewById(R.id.addPersonNoteText)
         addPersonAddButton = view.findViewById(R.id.addPersonAddButton)
 
-        token = context?.savePrefs()?.get("token","nullValue")
+        token = context?.savePrefs()?.get("token", "nullValue")
         userId = context?.savePrefs()?.get("userId", -1)
 
 
@@ -258,15 +255,6 @@ class AddPersonFragment : Fragment() {
         val encoded: String = Base64.encodeToString(byteArray, Base64.DEFAULT)
         imageDataString = encoded
 
-        // Create Retrofit
-        val retrofit = Retrofit.Builder()
-            .addConverterFactory(GsonConverterFactory.create())
-            .baseUrl("http://tmdcontacts-api.dev.tmd")
-            .build()
-
-        // Create Service
-        val service = retrofit.create(ContacsAPI::class.java)
-
         val addContactModel = AddContactModel(
             addPersonNameText.text.toString(),
             addPersonSurnameText.text.toString(),
@@ -282,10 +270,13 @@ class AddPersonFragment : Fragment() {
             addPersonNoteText.text.toString(),
             userId!!
         )
-        CoroutineScope(Dispatchers.IO).launch {
+        job = CoroutineScope(Dispatchers.IO).launch {
             // Do the POST request and get response
             val response =
-                service.addContact("Bearer " + token.toString(), addContactModel = addContactModel)
+                RetrofitOperations.instance.addContact(
+                    "Bearer " + token.toString(),
+                    addContactModel = addContactModel
+                )
 
             withContext(Dispatchers.Main) {
                 if (response.isSuccessful) {
@@ -305,12 +296,9 @@ class AddPersonFragment : Fragment() {
                 } else {
 
                     Log.e("RETROFIT_ERROR", response.code().toString())
-
-
                 }
             }
         }
     }
-
 
 }

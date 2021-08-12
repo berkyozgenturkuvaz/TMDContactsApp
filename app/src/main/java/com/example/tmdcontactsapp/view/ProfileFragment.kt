@@ -19,14 +19,9 @@ import com.example.tmdcontactsapp.R
 import com.example.tmdcontactsapp.`class`.Preferences.get
 import com.example.tmdcontactsapp.`class`.Preferences.savePrefs
 import com.example.tmdcontactsapp.`class`.Preferences.set
-import com.example.tmdcontactsapp.model.ProfileModel
-import com.example.tmdcontactsapp.service.ContacsAPI
+import com.example.tmdcontactsapp.`class`.RetrofitOperations
 import com.google.gson.Gson
-import retrofit2.Call
-import retrofit2.Callback
-import retrofit2.Response
-import retrofit2.Retrofit
-import retrofit2.converter.gson.GsonConverterFactory
+import kotlinx.coroutines.*
 
 private const val ARG_PARAM1 = "param1"
 private const val ARG_PARAM2 = "param2"
@@ -58,14 +53,13 @@ class ProfileFragment : Fragment() {
     lateinit var profileCompanyText: TextView
     lateinit var profileTitleText: TextView
     lateinit var profileNoteText: TextView
-    lateinit var profileGroupText: TextView
-    lateinit var profileLogoutButtonText: Button
     lateinit var updateProfile: Button
     lateinit var toolbar: Toolbar
 
     private var userId: Int? = 0
     private var userMail: String? = null
     private var token: String? = null
+    private var job: Job? = null
 
     private var nameProfile: String? = null
     private var surnameProfile: String? = null
@@ -79,9 +73,6 @@ class ProfileFragment : Fragment() {
     private var titleProfile: String? = null
     private var noteProfile: String? = null
     private var photo: String? = ""
-
-    private val BASE_URL = "http://tmdcontacts-api.dev.tmd"
-
 
 
     companion object {
@@ -166,23 +157,57 @@ class ProfileFragment : Fragment() {
         super.onStart()
 
 
-
-
     }
 
     //Get Profile Data using with email
+    @SuppressLint("SetTextI18n")
     private fun loadData() {
 
-        val retrofit = Retrofit.Builder()
-            .baseUrl(BASE_URL)
-            .addConverterFactory(GsonConverterFactory.create())
-            .build()
+        job = CoroutineScope(Dispatchers.IO).launch {
 
-        val service = retrofit.create(ContacsAPI::class.java)
-        val call =
-            userMail?.let { service.getProfileData("Bearer " + token.toString(), email = it) }
+            val response = RetrofitOperations.instance.getProfileData(
+                "Bearer " + token.toString(),
+                email = userMail.toString()
+            )
 
-        call?.enqueue(object : Callback<ProfileModel> {
+            withContext(Dispatchers.Main) {
+                if (response.isSuccessful) {
+                    response.body()?.let {
+                        val profileModels = response.body()
+                        profileNameText.text = "Name: " + profileModels?.name.toString()
+                        profileSurnameText.text = "Surname: " + profileModels?.surname.toString()
+                        profileEmailText.text = "Email: " + profileModels?.email.toString()
+                        profileAddressText.text = "Address: " + profileModels?.address.toString()
+                        profileBirthdayText.text =
+                            "Birthdate: " + profileModels?.birthDate.toString()
+                        profileCellphoneText.text = "Tel: " + profileModels?.tel.toString()
+                        profileWorkphoneText.text =
+                            "Work Tel: " + profileModels?.telBusiness.toString()
+                        profileHomephoneText.text = "Home Tel: " + profileModels?.telHome.toString()
+                        profileCompanyText.text = "Company: " + profileModels?.company.toString()
+                        profileTitleText.text = "Title: " + profileModels?.title.toString()
+                        profileNoteText.text = "Note: " + profileModels?.note.toString()
+                        photo = profileModels?.photo
+
+                        val imageBytes = Base64.decode(photo, 0)
+                        val decodedImage =
+                            BitmapFactory.decodeByteArray(imageBytes, 0, imageBytes.size)
+                        profileImageView.setImageBitmap(decodedImage)
+
+                        requireContext().savePrefs()["userProfile"] = Gson().toJson(profileModels)
+                        onStart()
+
+
+                    }
+                } else {
+                    Log.e("RETROFIT_ERROR", response.code().toString())
+                }
+            }
+
+        }
+
+
+        /*call?.enqueue(object : Callback<ProfileModel> {
             @SuppressLint("SetTextI18n")
             override fun onResponse(
                 call: Call<ProfileModel>,
@@ -223,27 +248,20 @@ class ProfileFragment : Fragment() {
             override fun onFailure(call: Call<ProfileModel>, t: Throwable) {
                 t.printStackTrace()
             }
-        })
+        })*/
 
     }
 
 
     fun updateProfile() {
         val intent = Intent(context, Update_Profile::class.java)
-        intent.putExtra("userId", userId)
-        intent.putExtra("name", nameProfile)
-        intent.putExtra("surname", surnameProfile)
-        intent.putExtra("email", emailProfile)
-        intent.putExtra("address", addressProfile)
-        intent.putExtra("birthdate", birthDateProfile)
-        intent.putExtra("tel", cellPhoneProfile)
-        intent.putExtra("telBusiness", workPhoneProfile)
-        intent.putExtra("telHome", homePhoneProfile)
-        intent.putExtra("company", companyProfile)
-        intent.putExtra("title", titleProfile)
-        intent.putExtra("note", noteProfile)
-        intent.putExtra("token", token)
         startActivity(intent)
     }
+
+    override fun onDestroy() {
+        super.onDestroy()
+        job?.cancel()
+    }
+
 
 }

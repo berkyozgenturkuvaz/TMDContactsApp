@@ -10,27 +10,27 @@ interface ContacsAPI {
 
     //Get Contact List for ContactsListFragment
     @GET("/api/Contacts/GetListByUserId")
-    fun getData(
+    suspend fun getData(
         @Header("Authorization") Bearer : String,
         @Header("accept") acceptString: String = "*/*",
         @Query(value = "userId", encoded = true) userId: Int
-    ): retrofit2.Call<List<ContactsModel>>
+    ): Response<List<ContactsModel>>
 
     //Get Contact Detail for DetailPerson
     @GET("/api/Contacts/Get")
-    fun getContactData(
+    suspend fun getContactData(
     @Header("Authorization") Bearer : String,
     @Header("accept") acceptString: String = "*/*",
     @Query(value = "id", encoded = true) contactId: Int
-    ): retrofit2.Call<ProfileModel>
+    ):Response<ProfileModel>
 
     //Get Profile Data by Email in Login For ProfileFragment
     @GET("/api/Users/GetByEmail")
-    fun getProfileData(
+    suspend fun getProfileData(
         @Header("Authorization") Bearer : String,
         @Header("accept") acceptString: String = "*/*",
         @Query(value = "email", encoded = true) email: String
-    ): retrofit2.Call<ProfileModel>
+    ): Response<ProfileModel>
 
     //Get User Image by Email in Home&Profile For ContactsList&Profile Fragment
     @GET("/api/Users/GetByEmail")
@@ -50,26 +50,26 @@ interface ContacsAPI {
 
     //Get Group List for GroupsFragment
     @GET("/api/Groups/GetListByUserId")
-    fun getDataGroups(
+    suspend fun getDataGroups(
         @Header("Authorization") Bearer : String,
         @Header("accept") acceptString: String = "*/*",
         @Query(value = "userId", encoded = true) userId: Int
-    ): retrofit2.Call<List<GroupsModel>>
+    ): Response<List<GroupsModel>>
 
 
 
     //Get Group Contacts for GroupDetails
     @GET("/api/GroupsContacts/GetListByGroupId")
-    fun getDataGroupDetails(
+    suspend fun getDataGroupDetails(
         @Header("Authorization") Bearer : String,
         @Header("accept") acceptString: String = "*/*",
         @Query(value = "groupId", encoded = true) groupId: Int
-    ): retrofit2.Call<List<GroupDetailsModel>>
+    ): Response<List<GroupDetailsModel>>
 
 
     //Post Create User Data for ActivityRegister
     @POST("/api/Auths/Register")
-    suspend fun createEmployee(
+    suspend fun createUser(
         @Header("accept") acceptString: String = "application/json-patch+json",
         @Header("Content-Type") contentType: String = "application/json-patch+json",
         @Body registerModel: RegisterModel

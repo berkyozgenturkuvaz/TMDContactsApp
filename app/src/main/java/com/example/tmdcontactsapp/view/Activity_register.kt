@@ -18,21 +18,17 @@ import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import com.example.tmdcontactsapp.R
 import com.example.tmdcontactsapp.R.layout.activity_register
+import com.example.tmdcontactsapp.`class`.RetrofitOperations
 import com.example.tmdcontactsapp.model.RegisterModel
-import com.example.tmdcontactsapp.service.ContacsAPI
 import com.google.gson.GsonBuilder
 import com.google.gson.JsonParser
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
-import retrofit2.Retrofit
-import retrofit2.converter.gson.GsonConverterFactory
+import kotlinx.coroutines.*
 import java.io.ByteArrayOutputStream
 
 
 class activity_register : AppCompatActivity() {
 
+    private var job : Job? = null
     var selectedPicture: Uri? = null
     var selectedBitmap: Bitmap? = null
     lateinit var imageDataString: String
@@ -169,15 +165,6 @@ class activity_register : AppCompatActivity() {
         imageDataString = encoded
         Log.d("Image :", encoded)
 
-        // Create Retrofit
-        val retrofit = Retrofit.Builder()
-            .addConverterFactory(GsonConverterFactory.create())
-            .baseUrl("http://tmdcontacts-api.dev.tmd")
-            .build()
-
-        // Create Service
-        val service = retrofit.create(ContacsAPI::class.java)
-
         val registerModel = RegisterModel(
             nameTextRegister.text.toString(),
             surnameTextRegister.text.toString(),
@@ -194,9 +181,10 @@ class activity_register : AppCompatActivity() {
             noteTextRegister.text.toString(),
             Status
         )
-        CoroutineScope(Dispatchers.IO).launch {
+
+        job = CoroutineScope(Dispatchers.IO).launch {
             // Do the POST request and get response
-            val response = service.createEmployee(registerModel = registerModel)
+            val response = RetrofitOperations.instance.createUser(registerModel = registerModel)
 
             withContext(Dispatchers.Main) {
                 if (response.isSuccessful) {
@@ -268,8 +256,14 @@ class activity_register : AppCompatActivity() {
 
             rawJSON()
 
-            val intentHome = Intent(this, MainActivity::class.java)
+            val intentHome = Intent(this, BottomNavigationViewActivity::class.java)
             startActivity(intentHome)
         }
     }
+
+    override fun onDestroy() {
+        super.onDestroy()
+        job?.cancel()
+    }
+
 }

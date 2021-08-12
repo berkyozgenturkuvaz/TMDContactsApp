@@ -15,13 +15,8 @@ import androidx.appcompat.widget.Toolbar
 import com.example.tmdcontactsapp.R
 import com.example.tmdcontactsapp.`class`.Preferences.get
 import com.example.tmdcontactsapp.`class`.Preferences.savePrefs
-import com.example.tmdcontactsapp.model.ProfileModel
-import com.example.tmdcontactsapp.service.ContacsAPI
-import retrofit2.Call
-import retrofit2.Callback
-import retrofit2.Response
-import retrofit2.Retrofit
-import retrofit2.converter.gson.GsonConverterFactory
+import com.example.tmdcontactsapp.`class`.RetrofitOperations
+import kotlinx.coroutines.*
 
 class Detail_Person : AppCompatActivity() {
 
@@ -39,12 +34,12 @@ class Detail_Person : AppCompatActivity() {
     lateinit var detailPersonNoteText: TextView
     lateinit var detailPersonGroupText: TextView
 
-    private val BASE_URL = "http://tmdcontacts-api.dev.tmd"
     private var photo: String? = ""
     private var token: String? = null
     lateinit var toolbar: Toolbar
     var id: Int? = 0
     var userId: Int? = 0
+    private var job: Job? = null
 
 
     @SuppressLint("SetTextI18n")
@@ -54,7 +49,7 @@ class Detail_Person : AppCompatActivity() {
 
         init()
 
-        token = savePrefs().get("token","nullValue")
+        token = savePrefs().get("token", "nullValue")
         id = savePrefs()["contactsId", -1]
         userId = savePrefs()["userId", -1]
 
@@ -85,20 +80,17 @@ class Detail_Person : AppCompatActivity() {
     //Get Profile Data using with email
     private fun loadDataContact() {
 
-        val retrofit = Retrofit.Builder()
-            .baseUrl(BASE_URL)
-            .addConverterFactory(GsonConverterFactory.create())
-            .build()
+        job = CoroutineScope(Dispatchers.IO).launch {
 
-        val service = retrofit.create(ContacsAPI::class.java)
-        val call = id?.let { service.getContactData("Bearer " + token.toString(), contactId = it) }
+            val response = id?.let {
+                RetrofitOperations.instance.getContactData(
+                    "Bearer " + token.toString(),
+                    contactId = it
+                )
+            }
 
-        call?.enqueue(object : Callback<ProfileModel> {
-            override fun onResponse(
-                call: Call<ProfileModel>,
-                response: Response<ProfileModel>
-            ) {
-                if (response.isSuccessful) {
+            withContext(Dispatchers.Main) {
+                if (response?.isSuccessful!!) {
                     response.body()?.let {
                         val profileModels = response.body()
 
@@ -125,13 +117,9 @@ class Detail_Person : AppCompatActivity() {
                 } else {
                     Log.e("RETROFIT_ERROR", response.code().toString())
                 }
-            }
 
-            override fun onFailure(call: Call<ProfileModel>, t: Throwable) {
-                t.printStackTrace()
             }
-        })
-
+        }
     }
 
 
@@ -144,22 +132,6 @@ class Detail_Person : AppCompatActivity() {
         when (item.itemId) {
             R.id.updateContact -> {
                 val intent = Intent(applicationContext, Update_Person::class.java)
-//                intent.putExtra("id", id)
-//                intent.putExtra("name", name)
-//                intent.putExtra("surname", surname)
-//                intent.putExtra("email", email)
-//                intent.putExtra("address", address)
-//                intent.putExtra("birthdate", birthdate)
-//                intent.putExtra("tel", tel)
-//                intent.putExtra("telBusiness", telBusiness)
-//                intent.putExtra("telHome", telHome)
-//                intent.putExtra("company", company)
-//                intent.putExtra("title", title)
-//                intent.putExtra("note", note)
-//                intent.putExtra("token", token)
-//                intent.putExtra("userId", userId)
-//                intent.putExtra("contactId", idFromGroup)
-//
                 startActivity(intent)
             }
         }

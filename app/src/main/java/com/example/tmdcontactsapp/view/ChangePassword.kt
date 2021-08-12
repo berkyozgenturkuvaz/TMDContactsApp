@@ -9,15 +9,10 @@ import androidx.appcompat.app.AppCompatActivity
 import com.example.tmdcontactsapp.R
 import com.example.tmdcontactsapp.`class`.Preferences.get
 import com.example.tmdcontactsapp.`class`.Preferences.savePrefs
+import com.example.tmdcontactsapp.`class`.RetrofitOperations
 import com.example.tmdcontactsapp.model.ChangePasswordModel
-import com.example.tmdcontactsapp.service.ContacsAPI
 import com.google.gson.GsonBuilder
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
-import retrofit2.Retrofit
-import retrofit2.converter.gson.GsonConverterFactory
+import kotlinx.coroutines.*
 
 class ChangePassword : AppCompatActivity() {
 
@@ -26,6 +21,7 @@ class ChangePassword : AppCompatActivity() {
     lateinit var newPassword: EditText
     lateinit var confirmPassword: EditText
     private var token: String? = null
+    private var job: Job? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -43,19 +39,11 @@ class ChangePassword : AppCompatActivity() {
     //POST Function
     fun rawJSON() {
 
-        // Create Retrofit
-        val retrofit = Retrofit.Builder()
-            .addConverterFactory(GsonConverterFactory.create())
-            .baseUrl("http://tmdcontacts-api.dev.tmd")
-            .build()
-
-        // Create Service
-        val service = retrofit.create(ContacsAPI::class.java)
-
         val changePasswordModel = ChangePasswordModel(email.toString(), newPassword.text.toString())
-        CoroutineScope(Dispatchers.IO).launch {
+
+        job = CoroutineScope(Dispatchers.IO).launch {
             // Do the POST request and get response
-            val response = service.changePass(
+            val response = RetrofitOperations.instance.changePass(
                 "Bearer " + token.toString(),
                 changePasswordModel = changePasswordModel,
                 currentPassword = currentPassword.text.toString()
@@ -73,7 +61,8 @@ class ChangePassword : AppCompatActivity() {
                     )
 
                     Log.d("Pretty Printed JSON :", prettyJson)
-                    val intent = Intent(applicationContext, BottomNavigationViewActivity::class.java)
+                    val intent =
+                        Intent(applicationContext, BottomNavigationViewActivity::class.java)
                     startActivity(intent)
 
                 } else {
@@ -93,6 +82,11 @@ class ChangePassword : AppCompatActivity() {
         if (newPassword.text.toString() == confirmPassword.text.toString()) {
             rawJSON()
         }
+    }
+
+    override fun onDestroy() {
+        super.onDestroy()
+        job?.cancel()
     }
 
 }

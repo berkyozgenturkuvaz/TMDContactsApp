@@ -19,6 +19,7 @@ import com.example.tmdcontactsapp.R
 import com.example.tmdcontactsapp.`class`.Preferences.get
 import com.example.tmdcontactsapp.`class`.Preferences.savePrefs
 import com.example.tmdcontactsapp.`class`.Preferences.set
+import com.example.tmdcontactsapp.`class`.RetrofitOperations
 import com.example.tmdcontactsapp.`class`.SwipeGesture
 import com.example.tmdcontactsapp.adapter.RecViewAdapterGroupDetails
 import com.example.tmdcontactsapp.model.DeleteGroupContactModel
@@ -27,24 +28,18 @@ import com.example.tmdcontactsapp.service.ContacsAPI
 import com.google.gson.GsonBuilder
 import com.google.gson.JsonParser
 import kotlinx.android.synthetic.main.activity_group_details.*
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
-import retrofit2.Call
-import retrofit2.Callback
-import retrofit2.Response
+import kotlinx.coroutines.*
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 
 class GroupDetails : AppCompatActivity() {
 
     lateinit var groupDetailsRecyclerView: RecyclerView
-    val BASE_URL = "http://tmdcontacts-api.dev.tmd"
     private var filteredList: ArrayList<GroupDetailsModel>? = ArrayList()
     var groupDetailsModel: ArrayList<GroupDetailsModel>? = null
     var groupDetailsRecyclerViewAdapter: RecViewAdapterGroupDetails? = null
     lateinit var searchTextGroupDetails: EditText
+    private var job: Job? = null
 
     private var groupId: Int? = 0
     private var userId: Int? = 0
@@ -231,21 +226,15 @@ class GroupDetails : AppCompatActivity() {
 
     private fun loadData() {
 
-        val retrofit = Retrofit.Builder()
-            .baseUrl(BASE_URL)
-            .addConverterFactory(GsonConverterFactory.create())
-            .build()
+        job = CoroutineScope(Dispatchers.IO).launch {
 
-        Log.e("GROUP ID: ", groupId.toString())
+            val response = RetrofitOperations.instance.getDataGroupDetails(
+                "Bearer " + token.toString(),
+                groupId = groupId!!
+            )
 
-        val service = retrofit.create(ContacsAPI::class.java)
-        val call = service.getDataGroupDetails("Bearer " + token.toString(), groupId = groupId!!)
+            withContext(Dispatchers.Main) {
 
-        call.enqueue(object : Callback<List<GroupDetailsModel>> {
-            override fun onResponse(
-                call: Call<List<GroupDetailsModel>>,
-                response: Response<List<GroupDetailsModel>>
-            ) {
                 if (response.isSuccessful) {
                     response.body()?.let {
                         groupDetailsModel = ArrayList(it)
@@ -278,16 +267,9 @@ class GroupDetails : AppCompatActivity() {
 
                         }
                     }
-
                 }
             }
-
-            override fun onFailure(call: Call<List<GroupDetailsModel>>, t: Throwable) {
-                t.printStackTrace()
-            }
-
-        })
-
+        }
     }
 
     fun updateGroup(view: View) {
@@ -298,6 +280,11 @@ class GroupDetails : AppCompatActivity() {
     fun addGroupContactButton(view: View) {
         val intent2 = Intent(applicationContext, AddGroupContact::class.java)
         startActivity(intent2)
+    }
+
+    override fun onDestroy() {
+        super.onDestroy()
+        job?.cancel()
     }
 
 }

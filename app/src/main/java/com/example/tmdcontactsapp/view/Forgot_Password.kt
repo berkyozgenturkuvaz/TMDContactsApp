@@ -11,21 +11,17 @@ import androidx.appcompat.app.AppCompatActivity
 import com.example.tmdcontactsapp.R
 import com.example.tmdcontactsapp.`class`.Preferences.savePrefs
 import com.example.tmdcontactsapp.`class`.Preferences.set
-import com.example.tmdcontactsapp.service.ContacsAPI
+import com.example.tmdcontactsapp.`class`.RetrofitOperations
 import com.google.gson.GsonBuilder
 import com.google.gson.JsonParser
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
-import retrofit2.Retrofit
-import retrofit2.converter.gson.GsonConverterFactory
+import kotlinx.coroutines.*
 
 class Forgot_Password : AppCompatActivity() {
 
     lateinit var emailForgotText: EditText
     lateinit var resetForgotButton: Button
     private var emailForgotPass: String? = null
+    private var job: Job? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -39,19 +35,12 @@ class Forgot_Password : AppCompatActivity() {
     //POST Function
     fun rawJSON() {
 
-        // Create Retrofit
-        val retrofit = Retrofit.Builder()
-            .addConverterFactory(GsonConverterFactory.create())
-            .baseUrl("http://tmdcontacts-api.dev.tmd")
-            .build()
-
-        // Create Service
-        val service = retrofit.create(ContacsAPI::class.java)
-
         emailForgotPass = emailForgotText.text.toString()
-        CoroutineScope(Dispatchers.IO).launch {
+
+        job = CoroutineScope(Dispatchers.IO).launch {
             // Do the POST request and get response
-            val response = service.forgotPass(email = emailForgotPass.toString())
+            val response =
+                RetrofitOperations.instance.forgotPass(email = emailForgotPass.toString())
 
             withContext(Dispatchers.Main) {
                 if (response.isSuccessful) {
@@ -91,4 +80,10 @@ class Forgot_Password : AppCompatActivity() {
             rawJSON()
         }
     }
+
+    override fun onDestroy() {
+        super.onDestroy()
+        job?.cancel()
+    }
+
 }

@@ -14,16 +14,11 @@ import androidx.appcompat.app.AppCompatActivity
 import com.example.tmdcontactsapp.R
 import com.example.tmdcontactsapp.`class`.Preferences.savePrefs
 import com.example.tmdcontactsapp.`class`.Preferences.set
+import com.example.tmdcontactsapp.`class`.RetrofitOperations
 import com.example.tmdcontactsapp.model.LoginModel
-import com.example.tmdcontactsapp.service.ContacsAPI
 import com.google.gson.GsonBuilder
 import com.google.gson.JsonParser
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
-import retrofit2.Retrofit
-import retrofit2.converter.gson.GsonConverterFactory
+import kotlinx.coroutines.*
 
 class MainActivity : AppCompatActivity() {
 
@@ -37,7 +32,7 @@ class MainActivity : AppCompatActivity() {
     lateinit var USER_MAIL: String
     private var token: String? = null
     private var expiration: String? = null
-
+    private var job: Job? = null
 
     @SuppressLint("CommitPrefEdits")
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -71,20 +66,12 @@ class MainActivity : AppCompatActivity() {
     //POST Function
     fun rawJSON() {
 
-        // Create Retrofit
-        val retrofit = Retrofit.Builder()
-            .addConverterFactory(GsonConverterFactory.create())
-            .baseUrl("http://tmdcontacts-api.dev.tmd")
-            .build()
-
-        // Create Service
-        val service = retrofit.create(ContacsAPI::class.java)
-
         val loginModel =
             LoginModel(emailTextLogin.text.toString(), passwordTextLogin.text.toString())
-        CoroutineScope(Dispatchers.IO).launch {
+
+        job = CoroutineScope(Dispatchers.IO).launch {
             // Do the POST request and get response
-            val response = service.login(loginModel = loginModel)
+            val response = RetrofitOperations.instance.login(loginModel = loginModel)
 
             withContext(Dispatchers.Main) {
                 if (response.isSuccessful) {
@@ -108,7 +95,8 @@ class MainActivity : AppCompatActivity() {
                     savePrefs()["expiration"] = response.body()?.expiration
 
 
-                    val intent = Intent(applicationContext,BottomNavigationViewActivity::class.java)
+                    val intent =
+                        Intent(applicationContext, BottomNavigationViewActivity::class.java)
                     startActivity(intent)
 
 //                    loadData()
@@ -207,6 +195,12 @@ class MainActivity : AppCompatActivity() {
 
 
         }
+    }
+
+    override fun onDestroy() {
+        super.onDestroy()
+        job?.cancel()
+
     }
 }
 

@@ -24,15 +24,12 @@ import androidx.core.content.ContextCompat
 import com.example.tmdcontactsapp.R
 import com.example.tmdcontactsapp.`class`.Preferences.get
 import com.example.tmdcontactsapp.`class`.Preferences.savePrefs
-import com.example.tmdcontactsapp.model.ProfileModel
+import com.example.tmdcontactsapp.`class`.RetrofitOperations
 import com.example.tmdcontactsapp.model.UpdateContactModel
 import com.example.tmdcontactsapp.model.UserImageModel
 import com.example.tmdcontactsapp.service.ContacsAPI
 import com.google.gson.GsonBuilder
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
+import kotlinx.coroutines.*
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
@@ -62,8 +59,9 @@ class Update_Person : AppCompatActivity() {
 
 
     var id: Int? = 0
-    var userId : Int? = 0
+    var userId: Int? = 0
     var idFromGroup: Int? = 0
+    private var job: Job? = null
 
     lateinit var name: String
     lateinit var surname: String
@@ -76,7 +74,7 @@ class Update_Person : AppCompatActivity() {
     lateinit var company: String
     lateinit var title: String
     lateinit var note: String
-    private var photo : String?= ""
+    private var photo: String? = ""
     private var token: String? = null
     private val BASE_URL = "http://tmdcontacts-api.dev.tmd"
 
@@ -86,21 +84,21 @@ class Update_Person : AppCompatActivity() {
 
         init()
 
-        id =  savePrefs()["contactsId", -1]
-        token = savePrefs().get("token","nullValue")
+        id = savePrefs()["contactsId", -1]
+        token = savePrefs().get("token", "nullValue")
         userId = savePrefs()["userId", -1]
 
-      /*  val intent = intent
-        idFromGroup = intent.getIntExtra("contactId",0)*/
+        /*  val intent = intent
+          idFromGroup = intent.getIntExtra("contactId",0)*/
 
-       /* loadData()
-        loadData2()*/
+        /* loadData()
+         loadData2()*/
         loadDataContact()
 
 
     }
 
-    fun init(){
+    fun init() {
         photoUpdatePerson = findViewById(R.id.photoUpdatePerson)
         updatePersonNameText = findViewById(R.id.updatePersonNameText)
         updatePersonSurnameText = findViewById(R.id.updatePersonSurnameText)
@@ -196,7 +194,8 @@ class Update_Person : AppCompatActivity() {
             .build()
 
         val service = retrofit.create(ContacsAPI::class.java)
-        val call = id?.let { service.getContactImage("Bearer " + token.toString(), contactId = id!!) }
+        val call =
+            id?.let { service.getContactImage("Bearer " + token.toString(), contactId = id!!) }
 
         call?.enqueue(object : Callback<UserImageModel> {
             override fun onResponse(
@@ -209,7 +208,8 @@ class Update_Person : AppCompatActivity() {
                         photo = userImageModel?.photo
 
                         val imageBytes = Base64.decode(photo, Base64.DEFAULT)
-                        val decodedImage = BitmapFactory.decodeByteArray(imageBytes, 0, imageBytes.size)
+                        val decodedImage =
+                            BitmapFactory.decodeByteArray(imageBytes, 0, imageBytes.size)
                         photoUpdatePerson.setImageBitmap(decodedImage)
                     }
 
@@ -233,7 +233,12 @@ class Update_Person : AppCompatActivity() {
             .build()
 
         val service = retrofit.create(ContacsAPI::class.java)
-        val call = id?.let { service.getContactImage("Bearer " + token.toString(), contactId = idFromGroup!!) }
+        val call = id?.let {
+            service.getContactImage(
+                "Bearer " + token.toString(),
+                contactId = idFromGroup!!
+            )
+        }
 
         call?.enqueue(object : Callback<UserImageModel> {
             override fun onResponse(
@@ -246,7 +251,8 @@ class Update_Person : AppCompatActivity() {
                         photo = userImageModel?.photo
 
                         val imageBytes = Base64.decode(photo, Base64.DEFAULT)
-                        val decodedImage = BitmapFactory.decodeByteArray(imageBytes, 0, imageBytes.size)
+                        val decodedImage =
+                            BitmapFactory.decodeByteArray(imageBytes, 0, imageBytes.size)
                         photoUpdatePerson.setImageBitmap(decodedImage)
                     }
 
@@ -265,20 +271,17 @@ class Update_Person : AppCompatActivity() {
     //Get Profile Data using with email
     private fun loadDataContact() {
 
-        val retrofit = Retrofit.Builder()
-            .baseUrl(BASE_URL)
-            .addConverterFactory(GsonConverterFactory.create())
-            .build()
+        job = CoroutineScope(Dispatchers.IO).launch {
 
-        val service = retrofit.create(ContacsAPI::class.java)
-        val call = id?.let { service.getContactData("Bearer " + token.toString(), contactId = it) }
+            val response = id?.let {
+                RetrofitOperations.instance.getContactData(
+                    "Bearer " + token.toString(),
+                    contactId = it
+                )
+            }
 
-        call?.enqueue(object : Callback<ProfileModel> {
-            override fun onResponse(
-                call: Call<ProfileModel>,
-                response: Response<ProfileModel>
-            ) {
-                if (response.isSuccessful) {
+            withContext(Dispatchers.Main) {
+                if (response?.isSuccessful!!) {
                     response.body()?.let {
                         val profileModels = response.body()
 
@@ -302,19 +305,13 @@ class Update_Person : AppCompatActivity() {
                             BitmapFactory.decodeByteArray(imageBytes, 0, imageBytes.size)
                         photoUpdatePerson.setImageBitmap(decodedImage)
 
-
                     }
 
                 } else {
                     Log.e("RETROFIT_ERROR", response.code().toString())
                 }
             }
-
-            override fun onFailure(call: Call<ProfileModel>, t: Throwable) {
-                t.printStackTrace()
-            }
-        })
-
+        }
     }
 
     //POST Function
@@ -328,15 +325,6 @@ class Update_Person : AppCompatActivity() {
         val encoded: String = Base64.encodeToString(byteArray, Base64.DEFAULT)
         imageDataString = encoded
         Log.d("Image :", encoded)
-
-        // Create Retrofit
-        val retrofit = Retrofit.Builder()
-            .addConverterFactory(GsonConverterFactory.create())
-            .baseUrl("http://tmdcontacts-api.dev.tmd")
-            .build()
-
-        // Create Service
-        val service = retrofit.create(ContacsAPI::class.java)
 
         val updateContactModel = UpdateContactModel(
             id!!,
@@ -353,9 +341,13 @@ class Update_Person : AppCompatActivity() {
             updatePersonTitleText.text.toString(),
             updatePersonNoteText.text.toString()
         )
-        CoroutineScope(Dispatchers.IO).launch {
+
+        job = CoroutineScope(Dispatchers.IO).launch {
             // Do the POST request and get response
-            val response = service.updateContact("Bearer " + token.toString() ,updateContactModel = updateContactModel)
+            val response = RetrofitOperations.instance.updateContact(
+                "Bearer " + token.toString(),
+                updateContactModel = updateContactModel
+            )
 
             withContext(Dispatchers.Main) {
                 if (response.isSuccessful) {
@@ -371,7 +363,7 @@ class Update_Person : AppCompatActivity() {
                     Log.d("Pretty Printed JSON :", prettyJson)
                     Log.d("Image :", encoded)
 
-                    val intent =Intent(applicationContext,Detail_Person::class.java)
+                    val intent = Intent(applicationContext, Detail_Person::class.java)
                     startActivity(intent)
 
                 } else {
@@ -385,6 +377,11 @@ class Update_Person : AppCompatActivity() {
 
     fun updatePersonButton(view: View) {
         rawJSON()
+    }
+
+    override fun onDestroy() {
+        super.onDestroy()
+        job?.cancel()
     }
 
 }

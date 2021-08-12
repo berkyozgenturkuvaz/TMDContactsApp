@@ -10,15 +10,10 @@ import androidx.appcompat.app.AppCompatActivity
 import com.example.tmdcontactsapp.R
 import com.example.tmdcontactsapp.`class`.Preferences.get
 import com.example.tmdcontactsapp.`class`.Preferences.savePrefs
+import com.example.tmdcontactsapp.`class`.RetrofitOperations
 import com.example.tmdcontactsapp.model.UpdateGroupModel
-import com.example.tmdcontactsapp.service.ContacsAPI
 import com.google.gson.GsonBuilder
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
-import retrofit2.Retrofit
-import retrofit2.converter.gson.GsonConverterFactory
+import kotlinx.coroutines.*
 
 class UpdateGroup : AppCompatActivity() {
 
@@ -26,8 +21,9 @@ class UpdateGroup : AppCompatActivity() {
     lateinit var updateGroupButton: Button
     private var groupId: Int? = 0
     private var userId: Int? = 0
-    private var groupName : String? = null
-    private var token:String? = null
+    private var groupName: String? = null
+    private var token: String? = null
+    private var job: Job? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -49,20 +45,15 @@ class UpdateGroup : AppCompatActivity() {
     //POST Function
     fun rawJSON() {
 
-        // Create Retrofit
-        val retrofit = Retrofit.Builder()
-            .addConverterFactory(GsonConverterFactory.create())
-            .baseUrl("http://tmdcontacts-api.dev.tmd")
-            .build()
-
-        // Create Service
-        val service = retrofit.create(ContacsAPI::class.java)
-
         val updateGroupModel =
             UpdateGroupModel(groupId!!, userId!!, updateGroupNameText.text.toString())
-        CoroutineScope(Dispatchers.IO).launch {
+
+        job = CoroutineScope(Dispatchers.IO).launch {
             // Do the POST request and get response
-            val response = service.updateGroup("Bearer " + token.toString() ,updateGroupModel = updateGroupModel)
+            val response = RetrofitOperations.instance.updateGroup(
+                "Bearer " + token.toString(),
+                updateGroupModel = updateGroupModel
+            )
 
             withContext(Dispatchers.Main) {
                 if (response.isSuccessful) {
@@ -76,8 +67,8 @@ class UpdateGroup : AppCompatActivity() {
                     )
 
                     Log.d("Pretty Printed JSON :", prettyJson)
-                     val intent = Intent(baseContext, GroupsFragment::class.java)
-                     startActivity(intent)
+                    val intent = Intent(baseContext, GroupsFragment::class.java)
+                    startActivity(intent)
 
 
                 } else {
@@ -91,5 +82,10 @@ class UpdateGroup : AppCompatActivity() {
 
     fun updateGroup(view: View) {
         rawJSON()
+    }
+
+    override fun onDestroy() {
+        super.onDestroy()
+        job?.cancel()
     }
 }

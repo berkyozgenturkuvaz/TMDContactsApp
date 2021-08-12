@@ -24,17 +24,12 @@ import androidx.core.content.ContextCompat
 import com.example.tmdcontactsapp.R
 import com.example.tmdcontactsapp.`class`.Preferences.get
 import com.example.tmdcontactsapp.`class`.Preferences.savePrefs
+import com.example.tmdcontactsapp.`class`.RetrofitOperations
 import com.example.tmdcontactsapp.model.ProfileModel
 import com.example.tmdcontactsapp.model.UpdateProfileModel
-import com.example.tmdcontactsapp.service.ContacsAPI
 import com.google.gson.Gson
 import com.google.gson.GsonBuilder
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
-import retrofit2.Retrofit
-import retrofit2.converter.gson.GsonConverterFactory
+import kotlinx.coroutines.*
 import java.io.ByteArrayOutputStream
 
 class Update_Profile : AppCompatActivity() {
@@ -63,6 +58,7 @@ class Update_Profile : AppCompatActivity() {
     private var photo: String? = ""
     private var token: String? = null
     private var profilemodel: String? = null
+    private var job: Job? = null
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -195,15 +191,6 @@ class Update_Profile : AppCompatActivity() {
         imageDataString = encoded
         Log.d("Image :", encoded)
 
-        // Create Retrofit
-        val retrofit = Retrofit.Builder()
-            .addConverterFactory(GsonConverterFactory.create())
-            .baseUrl("http://tmdcontacts-api.dev.tmd")
-            .build()
-
-        // Create Service
-        val service = retrofit.create(ContacsAPI::class.java)
-
         val updateProfileModel = UpdateProfileModel(
             userId!!,
             updateProfileNameText.text.toString(),
@@ -220,9 +207,10 @@ class Update_Profile : AppCompatActivity() {
             updateProfileNoteText.text.toString(),
             Status
         )
-        CoroutineScope(Dispatchers.IO).launch {
+
+        job = CoroutineScope(Dispatchers.IO).launch {
             // Do the POST request and get response
-            val response = service.updateProfile(
+            val response = RetrofitOperations.instance.updateProfile(
                 "Bearer " + token.toString(),
                 updateProfileModel = updateProfileModel
             )
@@ -308,7 +296,7 @@ class Update_Profile : AppCompatActivity() {
 //            startActivity(intentHome)
 //        }
         rawJSON()
-          val intentHome = Intent(applicationContext, BottomNavigationViewActivity::class.java)
+        val intentHome = Intent(applicationContext, BottomNavigationViewActivity::class.java)
         startActivity(intentHome)
 
     }
@@ -316,6 +304,11 @@ class Update_Profile : AppCompatActivity() {
     fun changePasswordButton(view: View) {
         val intent = Intent(applicationContext, ChangePassword::class.java)
         startActivity(intent)
+    }
+
+    override fun onDestroy() {
+        super.onDestroy()
+        job?.cancel()
     }
 
 }

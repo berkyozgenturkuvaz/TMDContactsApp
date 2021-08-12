@@ -28,17 +28,10 @@ import com.example.tmdcontactsapp.`class`.RetrofitOperations
 import com.example.tmdcontactsapp.`class`.SwipeGesture
 import com.example.tmdcontactsapp.adapter.RecyclerViewAdapter
 import com.example.tmdcontactsapp.model.ContactsModel
-import com.example.tmdcontactsapp.model.ProfileModel
 import com.example.tmdcontactsapp.service.ContacsAPI
 import com.google.gson.GsonBuilder
 import com.google.gson.JsonParser
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
-import retrofit2.Call
-import retrofit2.Callback
-import retrofit2.Response
+import kotlinx.coroutines.*
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 
@@ -48,11 +41,11 @@ private const val ARG_PARAM6 = "param6"
 
 class ContactsListFragment : Fragment() {
 
-    private val BASE_URL = "http://tmdcontacts-api.dev.tmd"
     private var contactModels: ArrayList<ContactsModel>? = null
     private var filteredList: ArrayList<ContactsModel>? = ArrayList()
     lateinit var homeRecyclerView: RecyclerView
     private var recyclerViewAdapter: RecyclerViewAdapter? = null
+    private var job: Job? = null
 
     lateinit var searchText: EditText
     private var userId: Int? = 0
@@ -159,42 +152,34 @@ class ContactsListFragment : Fragment() {
     //Get Profile Data using with email
     private fun loadData() {
 
-        RetrofitOperations.instance.getProfileData(
-            "Bearer " + token.toString(),
-            email = userMail.toString()
-        )
-            .enqueue(object : Callback<ProfileModel> {
-                override fun onResponse(
-                    call: Call<ProfileModel>,
-                    response: Response<ProfileModel>
-                ) {
-                    if (response.isSuccessful) {
-                        response.body()?.let {
-                            val profileModels = response.body()
-                            userId = profileModels?.id
-                            name = profileModels?.name
-                            surname = profileModels?.surname
-                            photo = profileModels?.photo
+        job = CoroutineScope(Dispatchers.IO).launch {
 
+            val response = RetrofitOperations.instance.getProfileData(
+                "Bearer " + token.toString(),
+                email = userMail.toString()
+            )
 
+            withContext(Dispatchers.Main) {
+                if (response.isSuccessful) {
+                    response.body()?.let {
+                        val profileModels = response.body()
+                        userId = profileModels?.id
+                        name = profileModels?.name
+                        surname = profileModels?.surname
+                        photo = profileModels?.photo
 
-                            context?.savePrefs()?.set("userId", profileModels?.id)
+                        context?.savePrefs()?.set("userId", profileModels?.id)
 
-                            loadDataContact()
-                            onStart()
+                        loadDataContact()
+                        onStart()
 
-                        }
-                    } else {
-                        Log.e("RETROFIT_ERROR", response.code().toString())
                     }
-
+                } else {
+                    Log.e("RETROFIT_ERROR", response.code().toString())
                 }
+            }
 
-                override fun onFailure(call: Call<ProfileModel>, t: Throwable) {
-                    t.printStackTrace()
-                }
-            })
-
+        }
     }
 
     //Delete Item From RecList
@@ -276,7 +261,52 @@ class ContactsListFragment : Fragment() {
     }
 
     private fun loadDataContact() {
-        userId?.let {
+
+        job = CoroutineScope(Dispatchers.IO).launch {
+            val response = userId?.let {
+                RetrofitOperations.instance.getData(
+                    "Bearer " + token.toString(),
+                    userId = it
+                )
+            }
+
+            withContext(Dispatchers.Main){
+
+                if (response?.isSuccessful!!) {
+                    response.body()?.let {
+                        contactModels = ArrayList(it)
+                        contactModels?.let { contactsmodel ->
+                            recyclerViewAdapter = RecyclerViewAdapter(contactsmodel)
+                            recyclerViewAdapter?.setType(RecyclerViewAdapter.VIEW_TYPE_ONE)
+                            recyclerViewAdapter?.setListener(object :
+                                RecyclerViewAdapter.Listener {
+                                override fun onItemClick(contactsModel: ContactsModel) {
+                                    Toast.makeText(
+                                        context,
+                                        contactsModel.name,
+                                        Toast.LENGTH_LONG
+                                    ).show()
+
+                                    context?.savePrefs()?.set("contactsId", contactsModel.id)
+
+                                    val intent = Intent(context, Detail_Person::class.java)
+                                    startActivity(intent)
+                                }
+
+                            })
+                            val touchHelper = ItemTouchHelper(swipeGesture)
+                            touchHelper.attachToRecyclerView(homeRecyclerView)
+                            homeRecyclerView.adapter = recyclerViewAdapter
+                        }
+                    }
+                }
+
+
+
+            }
+        }
+
+        /*userId?.let {
             RetrofitOperations.instance.getData(
                 "Bearer " + token.toString(),
                 userId = it
@@ -321,6 +351,12 @@ class ContactsListFragment : Fragment() {
                     t.printStackTrace()
                     t.message
                 }
-            })
+            })*/
     }
+
+    override fun onDestroy() {
+        super.onDestroy()
+        job?.cancel()
+    }
+
 }

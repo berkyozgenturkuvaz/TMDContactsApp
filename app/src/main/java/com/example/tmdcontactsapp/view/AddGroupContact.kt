@@ -13,20 +13,12 @@ import androidx.recyclerview.widget.RecyclerView
 import com.example.tmdcontactsapp.R
 import com.example.tmdcontactsapp.`class`.Preferences.get
 import com.example.tmdcontactsapp.`class`.Preferences.savePrefs
+import com.example.tmdcontactsapp.`class`.RetrofitOperations
 import com.example.tmdcontactsapp.adapter.RecyclerViewAdapter
 import com.example.tmdcontactsapp.model.AddGroupContactModel
 import com.example.tmdcontactsapp.model.ContactsModel
-import com.example.tmdcontactsapp.service.ContacsAPI
 import com.google.gson.GsonBuilder
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
-import retrofit2.Call
-import retrofit2.Callback
-import retrofit2.Response
-import retrofit2.Retrofit
-import retrofit2.converter.gson.GsonConverterFactory
+import kotlinx.coroutines.*
 
 class AddGroupContact : AppCompatActivity() {
 
@@ -34,6 +26,7 @@ class AddGroupContact : AppCompatActivity() {
     private var groupId: Int? = null
     private var token: String? = null
     private var userId: Int? = 0
+    private var job: Job? = null
 
     lateinit var addGroupContactRecyclerView: RecyclerView
     private val BASE_URL = "http://tmdcontacts-api.dev.tmd"
@@ -93,15 +86,46 @@ class AddGroupContact : AppCompatActivity() {
     }
 
     private fun loadData() {
-        val retrofit = Retrofit.Builder()
-            .baseUrl(BASE_URL)
-            .addConverterFactory(GsonConverterFactory.create())
-            .build()
 
-        val service = retrofit.create(ContacsAPI::class.java)
-        val call = userId?.let { service.getData("Bearer " + token.toString(), userId = it) }
+        job = CoroutineScope(Dispatchers.IO).launch {
 
-        call?.enqueue(object : Callback<List<ContactsModel>> {
+            val response =
+                userId?.let {
+                    RetrofitOperations.instance.getData(
+                        "Bearer " + token.toString(),
+                        userId = it
+                    )
+                }
+
+            withContext(Dispatchers.Main) {
+                if (response?.isSuccessful!!) {
+                    response.body()?.let {
+                        contactModels = ArrayList(it)
+                        contactModels?.let { contactsmodel ->
+                            recyclerViewAdapter = RecyclerViewAdapter(contactsmodel)
+                            recyclerViewAdapter?.setType(RecyclerViewAdapter.VIEW_TYPE_ONE)
+                            recyclerViewAdapter?.setListener(object : RecyclerViewAdapter.Listener {
+                                override fun onItemClick(contactsModel: ContactsModel) {
+                                    Toast.makeText(
+                                        applicationContext,
+                                        "${contactsModel.id}",
+                                        Toast.LENGTH_LONG
+                                    ).show()
+
+                                    contactId = contactsModel.id
+                                    rawJSON()
+                                }
+                            })
+                            addGroupContactRecyclerView.adapter = recyclerViewAdapter
+                        }
+                    }
+                }
+
+            }
+        }
+
+
+        /*call?.enqueue(object : Callback<List<ContactsModel>> {
             override fun onResponse(
                 call: Call<List<ContactsModel>>,
                 response: Response<List<ContactsModel>>
@@ -139,26 +163,18 @@ class AddGroupContact : AppCompatActivity() {
                 t.printStackTrace()
             }
 
-        })
+        })*/
 
     }
 
     //POST Function
     fun rawJSON() {
 
-        // Create Retrofit
-        val retrofit = Retrofit.Builder()
-            .addConverterFactory(GsonConverterFactory.create())
-            .baseUrl("http://tmdcontacts-api.dev.tmd")
-            .build()
-
-        // Create Service
-        val service = retrofit.create(ContacsAPI::class.java)
-
         val addGroupContactModel = AddGroupContactModel(groupId!!, contactId!!)
-        CoroutineScope(Dispatchers.IO).launch {
+
+        job = CoroutineScope(Dispatchers.IO).launch {
             // Do the POST request and get response
-            val response = service.addGroupContact(
+            val response = RetrofitOperations.instance.addGroupContact(
                 "Bearer " + token.toString(),
                 addGroupContactModel = addGroupContactModel
             )
@@ -175,7 +191,7 @@ class AddGroupContact : AppCompatActivity() {
                     )
 
                     Log.d("Pretty Printed JSON :", prettyJson)
-                    val intent = Intent(applicationContext,GroupDetails::class.java)
+                    val intent = Intent(applicationContext, GroupDetails::class.java)
                     startActivity(intent)
 
                 } else {
@@ -187,5 +203,8 @@ class AddGroupContact : AppCompatActivity() {
         }
     }
 
-
+    override fun onDestroy() {
+        super.onDestroy()
+        job?.cancel()
+    }
 }

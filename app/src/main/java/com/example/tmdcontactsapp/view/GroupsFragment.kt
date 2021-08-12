@@ -21,19 +21,14 @@ import com.example.tmdcontactsapp.R
 import com.example.tmdcontactsapp.`class`.Preferences.get
 import com.example.tmdcontactsapp.`class`.Preferences.savePrefs
 import com.example.tmdcontactsapp.`class`.Preferences.set
+import com.example.tmdcontactsapp.`class`.RetrofitOperations
 import com.example.tmdcontactsapp.`class`.SwipeGesture
 import com.example.tmdcontactsapp.adapter.RecyclerViewAdapterGroups
 import com.example.tmdcontactsapp.model.GroupsModel
 import com.example.tmdcontactsapp.service.ContacsAPI
 import com.google.gson.GsonBuilder
 import com.google.gson.JsonParser
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
-import retrofit2.Call
-import retrofit2.Callback
-import retrofit2.Response
+import kotlinx.coroutines.*
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 
@@ -42,8 +37,8 @@ private const val ARG_PARAM2 = "param2"
 
 class GroupsFragment : Fragment() {
 
+    private var job: Job? = null
     lateinit var groupsRecyclerView: RecyclerView
-    val BASE_URL = "http://tmdcontacts-api.dev.tmd"
     private var groupsContactModels: ArrayList<GroupsModel>? = null
     private var filteredList: ArrayList<GroupsModel>? = ArrayList()
     var groupsRecyclerViewAdapter: RecyclerViewAdapterGroups? = null
@@ -234,19 +229,14 @@ class GroupsFragment : Fragment() {
 
     private fun loadData() {
 
-        val retrofit = Retrofit.Builder()
-            .baseUrl(BASE_URL)
-            .addConverterFactory(GsonConverterFactory.create())
-            .build()
+        job = CoroutineScope(Dispatchers.IO).launch {
 
-        val service = retrofit.create(ContacsAPI::class.java)
-        val call = service.getDataGroups("Bearer " + token.toString(), userId = userId!!)
+            val response = RetrofitOperations.instance.getDataGroups(
+                "Bearer " + token.toString(),
+                userId = userId!!
+            )
 
-        call.enqueue(object : Callback<List<GroupsModel>> {
-            override fun onResponse(
-                call: Call<List<GroupsModel>>,
-                response: Response<List<GroupsModel>>
-            ) {
+            withContext(Dispatchers.Main) {
                 if (response.isSuccessful) {
                     response.body()?.let {
                         groupsContactModels = ArrayList(it)
@@ -255,14 +245,11 @@ class GroupsFragment : Fragment() {
                             groupsRecyclerViewAdapter?.setListenerGroups(object :
                                 RecyclerViewAdapterGroups.ListenerGroups {
                                 override fun onItemClick(groupsModel: GroupsModel) {
-                                    Toast.makeText(
-                                        context,
-                                        groupsModel.name,
-                                        Toast.LENGTH_LONG
-                                    ).show()
+                                    Toast.makeText(context, groupsModel.name, Toast.LENGTH_LONG)
+                                        .show()
 
-                                    context?.savePrefs()?.set("groupId", groupsModel?.id)
-                                    context?.savePrefs()?.set("groupName", groupsModel?.name)
+                                    context?.savePrefs()?.set("groupId", groupsModel.id)
+                                    context?.savePrefs()?.set("groupName", groupsModel.name)
 
                                     val intent = Intent(context, GroupDetails::class.java)
                                     startActivity(intent)
@@ -274,18 +261,10 @@ class GroupsFragment : Fragment() {
                             groupsRecyclerView.adapter = groupsRecyclerViewAdapter
                             groupsRecyclerView.adapter = groupsRecyclerViewAdapter
                         }
-
                     }
-
                 }
             }
-
-            override fun onFailure(call: Call<List<GroupsModel>>, t: Throwable) {
-                t.printStackTrace()
-            }
-
-        })
-
+        }
     }
 
     fun addGroupButton() {
@@ -293,4 +272,8 @@ class GroupsFragment : Fragment() {
         startActivity(intent2)
     }
 
+    override fun onDestroy() {
+        super.onDestroy()
+        job?.cancel()
+    }
 }
