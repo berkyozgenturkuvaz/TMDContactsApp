@@ -79,7 +79,7 @@ class AddPersonFragment : Fragment() {
     ): View? {
         // Inflate the layout for this fragment
         val view: View = inflater.inflate(R.layout.activity_add_person, container, false)
-        val toolbar = view?.findViewById<androidx.appcompat.widget.Toolbar>(R.id.toolbarMenu)
+        val toolbar = view.findViewById<androidx.appcompat.widget.Toolbar>(R.id.toolbarMenu)
         (requireActivity() as AppCompatActivity).setSupportActionBar(toolbar)
 
         photoAddPerson = view.findViewById(R.id.photoAddPerson)
@@ -266,6 +266,9 @@ class AddPersonFragment : Fragment() {
 
                     Log.d("Pretty Printed JSON :", prettyJson)
                     Log.d("Image :", encoded)
+
+                    val intent = Intent(context,BottomNavigationViewActivity::class.java)
+                    startActivity(intent)
 
 
                 } else {

@@ -214,13 +214,13 @@ class ContactsListFragment : Fragment() {
                                 if (filteredList!!.isEmpty()) {
                                     Toast.makeText(
                                         context,
-                                        contactModels!![viewHolder.adapterPosition].name + "isimli kullanıcı silindi.",
+                                        contactModels!![viewHolder.adapterPosition].name + " isimli kullanıcı silindi.",
                                         Toast.LENGTH_LONG
                                     ).show()
                                 } else {
                                     Toast.makeText(
                                         context,
-                                        filteredList!![viewHolder.adapterPosition].name + "isimli kullanıcı silindi.",
+                                        filteredList!![viewHolder.adapterPosition].name + " isimli kullanıcı silindi.",
                                         Toast.LENGTH_LONG
                                     ).show()
                                 }

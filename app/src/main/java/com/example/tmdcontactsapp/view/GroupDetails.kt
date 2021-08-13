@@ -170,17 +170,16 @@ class GroupDetails : AppCompatActivity() {
                                             ?.string()
                                     )
                                 )
-
                                 if (filteredList!!.isEmpty()) {
                                     Toast.makeText(
                                         applicationContext,
-                                        groupDetailsModel!![viewHolder.adapterPosition].name + "isimli kişi gruptan silindi.",
+                                        groupDetailsModel!![viewHolder.adapterPosition].name + " isimli kişi gruptan silindi.",
                                         Toast.LENGTH_LONG
                                     ).show()
                                 } else {
                                     Toast.makeText(
                                         applicationContext,
-                                        filteredList!![viewHolder.adapterPosition].name + "isimli kişi gruptan silindi.",
+                                        filteredList!![viewHolder.adapterPosition].name + " isimli kişi gruptan silindi.",
                                         Toast.LENGTH_LONG
                                     ).show()
                                 }

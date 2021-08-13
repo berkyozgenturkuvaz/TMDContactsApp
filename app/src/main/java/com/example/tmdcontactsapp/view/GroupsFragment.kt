@@ -157,13 +157,13 @@ class GroupsFragment : Fragment() {
                                 if (filteredList!!.isEmpty()) {
                                     Toast.makeText(
                                         context,
-                                        groupsContactModels!![viewHolder.adapterPosition].name + "isimli grup silindi.",
+                                        groupsContactModels!![viewHolder.adapterPosition].name + " isimli grup silindi.",
                                         Toast.LENGTH_LONG
                                     ).show()
                                 } else {
                                     Toast.makeText(
                                         context,
-                                        filteredList!![viewHolder.adapterPosition].name + "isimli grup silindi.",
+                                        filteredList!![viewHolder.adapterPosition].name + " isimli grup silindi.",
                                         Toast.LENGTH_LONG
                                     ).show()
                                 }
